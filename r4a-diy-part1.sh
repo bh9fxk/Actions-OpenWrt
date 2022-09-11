@@ -16,4 +16,4 @@
 # Add a feed source
 #echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
-wget 'https://github.com/BH9FXK/Actions-OpenWrt-mir4a/raw/main/r4a.zip' --no-check-certificate && unzip -o r4a.zip && rm -f r4a.zip
+wget 'https://github.com/BH9FXK/Actions-OpenWrt/raw/main/r4a.zip' --no-check-certificate && unzip -o r4a.zip && rm -f r4a.zip
