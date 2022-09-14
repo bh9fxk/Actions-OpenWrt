@@ -24,8 +24,8 @@ env:
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: hc5611.config
-  DIY_P1_SH: hc5611-r3-diy-part1.sh
-  DIY_P2_SH: hc5611-r3-diy-part2.sh
+  DIY_P1_SH: hc5611-diy-part1.sh
+  DIY_P2_SH: hc5611-diy-part2.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
@@ -46,6 +46,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
         sudo -E apt-get -qq update
         sudo -E apt-get -qq install $(curl -fsSL https://github.com/BH9FXK/Actions-OpenWrt/raw/main/depends-ubuntu-latest)
         sudo -E apt-get -qq autoremove --purge
