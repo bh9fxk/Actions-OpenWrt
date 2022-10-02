@@ -1,4 +1,5 @@
 配置功能，上传.config文件即可。
+20221003 修改Mattraks/delete-workflow-runs@v2。
 
 **English** | [中文](https://p3terx.com/archives/build-openwrt-with-github-actions.html)
 
@@ -37,7 +38,7 @@ A template for building OpenWrt with GitHub Actions
 - [WeTransfer](https://wetransfer.com/)
 - [Mikubill/transfer](https://github.com/Mikubill/transfer)
 - [softprops/action-gh-release](https://github.com/softprops/action-gh-release)
-- [ActionsRML/delete-workflow-runs](https://github.com/ActionsRML/delete-workflow-runs)
+- [Mattraks/delete-workflow-runs](https://github.com/Mattraks/delete-workflow-runs)
 - [dev-drprasad/delete-older-releases](https://github.com/dev-drprasad/delete-older-releases)
 - [peter-evans/repository-dispatch](https://github.com/peter-evans/repository-dispatch)
 
