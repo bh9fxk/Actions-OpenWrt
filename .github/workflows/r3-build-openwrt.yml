@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Build OpenWrt HC5611
+name: Build OpenWrt R3
 
 on:
 #  schedule:
