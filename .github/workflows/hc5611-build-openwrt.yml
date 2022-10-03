@@ -10,11 +10,9 @@
 
 name: Build OpenWrt HC5611
 
-on:
+on: [push]
 #  schedule:
-#    - cron: 2 2 */7 * *
-  repository_dispatch:
-    types: [my-event]
+#    - cron: 2 2 */7 * *    
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
