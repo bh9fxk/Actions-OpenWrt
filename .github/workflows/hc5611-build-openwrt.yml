@@ -10,7 +10,7 @@
 
 name: Build OpenWrt HC5611
 
-on: [push]
+on: workflow_dispatch
 #  schedule:
 #    - cron: 2 2 */7 * *    
 
@@ -146,8 +146,8 @@ jobs:
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2
       with:
-        retain_days: 3
-        keep_minimum_runs: 5
+        retain_days: 1
+        keep_minimum_runs: 3
 
     - name: Remove old Releases
       uses: dev-drprasad/delete-older-releases@v0.2.0
