@@ -10,7 +10,7 @@
 
 name: Build OpenWrt HC5611
 
-on: 
+on:
   repository_dispatch:
   workflow_dispatch:
 #  schedule:
