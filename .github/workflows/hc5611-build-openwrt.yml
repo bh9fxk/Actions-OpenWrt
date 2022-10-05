@@ -11,6 +11,7 @@
 name: Build OpenWrt HC5611
 
 on: 
+  repository_dispatch:
   workflow_dispatch:
 #  schedule:
 #    - cron: 2 2 */7 * *    
