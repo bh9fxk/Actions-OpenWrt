@@ -17,4 +17,4 @@
 echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
 #wget 'https://github.com/BH9FXK/Actions-OpenWrt/raw/main/hc5611.zip' --no-check-certificate && unzip -o hc5611.zip && rm -f hc5611.zip
-wget 'https://github.com/BH9FXK/Actions-OpenWrt/raw/main/hc5611.tar.gz' --no-check-certificate && tar -zxvf hc5611.tar.gz && rm -f hc5611.tar.gz
+wget 'https://github.com/BH9FXK/Actions-OpenWrt/raw/main/hc5611.tar.gz' --no-check-certificate && tar -xzvf hc5611.tar.gz && rm -f hc5611.tar.gz
