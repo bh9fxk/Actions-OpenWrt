@@ -2,6 +2,8 @@
 
 20221003 修改Mattraks/delete-workflow-runs@v2。
 
+调整了一些代码，默认只保留上传release。
+
 **English** | [中文](https://p3terx.com/archives/build-openwrt-with-github-actions.html)
 
 # Actions-OpenWrt
