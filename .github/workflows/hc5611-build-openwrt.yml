@@ -40,9 +40,9 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         date
-        sudo docker rmi `docker images -q`
-        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
-        sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
+        #sudo docker rmi `docker images -q`
+        #sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        #sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
         sudo -E apt-get update
         sudo -E apt-get -y dist-upgrade
         sudo -E apt-get -y install $(curl -fsSL https://github.com/BH9FXK/Actions-OpenWrt/raw/main/depends-ubuntu-latest)
