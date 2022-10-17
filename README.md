@@ -1,8 +1,8 @@
-配置功能，上传.config文件即可。
+配置功能，上传.config文件即可，自用型号极路由HC5611、小米路由器3、小米路由器4A千兆版。
 
-20221003 修改Mattraks/delete-workflow-runs@v2。
 
 调整了一些代码，默认只保留上传release。
+
 
 **English** | [中文](https://p3terx.com/archives/build-openwrt-with-github-actions.html)
 
