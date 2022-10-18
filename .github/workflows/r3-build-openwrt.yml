@@ -111,12 +111,12 @@ jobs:
     - name: Check space usage
       if: (!cancelled())
       run: |
-        echo "======================="
+        echo "------------------------"
         echo "Space usage:"
-        echo "======================="
+        echo "------------------------"
         cd openwrt
         df -h
-        echo "======================="        
+        echo "------------------------"
         du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
         du -h --max-depth=1 ./build_dir
         du -h --max-depth=1 ./bin
