@@ -35,6 +35,15 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: 开始时间
+      run: |
+        echo "------------------------"
+        echo "Start Time"
+        echo "------------------------"
+        date
+        echo "------------------------"
+        ls ${{ github.workspace }}
+
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -139,7 +148,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.organize.outputs.status == 'success'
       run: |
-        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        echo "release_tag="$(date +"%Y.%m.%d-%H%M")-${{ env.DEVICE_NAME }}" >> $GITHUB_OUTPUT
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
