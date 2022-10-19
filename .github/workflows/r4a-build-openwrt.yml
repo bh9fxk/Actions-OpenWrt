@@ -9,15 +9,25 @@ name: Build OpenWrt R4A
 on: 
   workflow_dispatch
 #  schedule:
-#    - cron: 2 7 */15 * *
+#    - cron: '2 7 */15 * *'
+    inputs:
+      model:
+        description: 选择需要编译固件的路由器型号
+        required: true
+        default: 'r4a' 
+        type: choice
+        options:
+        - r4a
+        - r3
+        - hc5611
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   #FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: r4a.config
-  DIY_P1_SH: r4a-diy-part1.sh
-  DIY_P2_SH: r4a-diy-part2.sh
+  CONFIG_FILE: ${{ inputs.model }}.config
+  DIY_P1_SH: ${{ inputs.model }}-diy-part1.sh
+  DIY_P2_SH: ${{ inputs.model }}-diy-part2.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: false
   UPLOAD_RELEASE: true
@@ -28,6 +38,13 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
+    - name: 路由器型号
+      run: |
+      #
+      echo "--------------------------------"
+      echo "开始编译路由器${{ inputs.model }}的OpenWrt固件"
+      echo "--------------------------------"
+
     - name: Checkout
       uses: actions/checkout@v3
 
