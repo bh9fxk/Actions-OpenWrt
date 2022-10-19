@@ -4,7 +4,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Build OpenWrt R4A
+name: Build OpenWrt
 
 on: 
   workflow_dispatch:
