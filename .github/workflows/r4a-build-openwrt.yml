@@ -48,6 +48,16 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: 开始时间
+      run: |
+        #
+        echo "------------------------"
+        echo "Start Time"
+        echo "------------------------"
+        date
+        echo "------------------------"
+        ls ${{ github.workspace }}
+
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
