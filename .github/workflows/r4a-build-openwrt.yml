@@ -40,10 +40,10 @@ jobs:
     steps:
     - name: 路由器型号
       run: |
-      #
-      echo "--------------------------------"
-      echo "开始编译路由器${{ inputs.model }}的OpenWrt固件"
-      echo "--------------------------------"
+        #
+        echo "--------------------------------"
+        echo "开始编译路由器${{ inputs.model }}的OpenWrt固件"
+        echo "--------------------------------"
 
     - name: Checkout
       uses: actions/checkout@v3
