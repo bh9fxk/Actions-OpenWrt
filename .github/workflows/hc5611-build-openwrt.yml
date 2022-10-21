@@ -126,7 +126,7 @@ jobs:
       if: (!cancelled())
       run: |
         echo "-------------------------------------------"
-        echo "Space usage:"
+        echo "Space usage"
         echo "-------------------------------------------"
         cd openwrt
         df -h
