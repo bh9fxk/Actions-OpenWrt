@@ -39,9 +39,9 @@ jobs:
     - name: 路由器型号
       run: |
         #
-        echo "--------------------------------"
+        echo "----------------------------------------"
         echo "开始编译路由器${{ inputs.model }}的OpenWrt固件"
-        echo "--------------------------------"
+        echo "----------------------------------------"
 
     - name: Checkout
       uses: actions/checkout@v3
@@ -49,10 +49,10 @@ jobs:
     - name: 开始时间
       run: |
         #
-        echo "-------------------------------------------"
+        echo "----------------------------------------"
         echo "Start Time"
         date
-        echo "-------------------------------------------"
+        echo "----------------------------------------"
         echo "当前目录中的文件"
         ls ${{ github.workspace }}
 
@@ -91,7 +91,7 @@ jobs:
       working-directory: /workdir
       run: |
         df -hT $PWD
-        echo "-------------------------------------------"
+        echo "----------------------------------------"
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
@@ -140,12 +140,12 @@ jobs:
       if: (!cancelled())
       run: |
         #
-        echo "-------------------------------------------"
+        echo "----------------------------------------"
         echo "Space usage"
-        echo "-------------------------------------------"
+        echo "----------------------------------------"
         cd openwrt
         df -h
-        echo "-------------------------------------------"
+        echo "----------------------------------------"
         du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
         du -h --max-depth=1 ./build_dir
         du -h --max-depth=1 ./bin
