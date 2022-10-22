@@ -5,6 +5,7 @@
 调整了一些代码，默认只保留上传release。
 
 功能：（去掉了KMS vftp ddns。）
+
 1 wol
 2 n2n
 3 helloworld
