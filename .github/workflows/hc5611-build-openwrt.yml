@@ -35,11 +35,9 @@ jobs:
     - name: 开始时间
       run: |
         #
-        echo "------------------------------------"
-        echo "Start Time"
+        echo "------------Start Time--------------"
         date
-        echo "------------------------------------"
-        echo "当前目录中的文件"
+        echo "----------当前目录中的文件----------"
         ls ${{ github.workspace }}
 
     - name: 卸载软件包和清理Docker镜像
@@ -55,9 +53,9 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo -E apt-get update
-        echo "-----------------------------------"
+        echo "---------install依赖包-------------"
         sudo -E apt-get -y install $(cat $GITHUB_WORKSPACE/depends-ubuntu)
-        echo "-----------------------------------"
+        echo "---------dist-upgrade--------------"
         sudo -E apt-get -y dist-upgrade
         
     - name: 清理空间
@@ -79,10 +77,9 @@ jobs:
       working-directory: /workdir
       run: |
         #
-        echo "------------------------------------"
-        echo "Space usage"
+        echo "------------Space usage------------"
         df -hT $PWD
-        echo "------------------------------------"
+        echo "----------克隆OpenWrt源码----------"
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
@@ -131,10 +128,9 @@ jobs:
       if: (!cancelled())
       run: |
         cd openwrt
-        echo "------------------------------------"
-        echo "Space usage"
+        echo "------------Space usage------------"
         df -h
-        echo "------------------------------------"
+        echo "-----------OpenWrt编译目录----------"
         du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
         du -h --max-depth=1 ./build_dir
         du -h --max-depth=1 ./bin
