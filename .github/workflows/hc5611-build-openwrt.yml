@@ -55,7 +55,9 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo -E apt-get update
+        echo "-----------------------------------"
         sudo -E apt-get -y install $(cat $GITHUB_WORKSPACE/depends-ubuntu)
+        echo "-----------------------------------"
         sudo -E apt-get -y dist-upgrade
         
     - name: 清理空间
