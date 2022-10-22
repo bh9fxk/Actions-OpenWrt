@@ -175,7 +175,7 @@ jobs:
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")${{ env.DEVICE_NAME }}" >> $GITHUB_OUTPUT
         touch release.txt
-        echo "OpenWrt{{ env.DEVICE_NAME }}_firmware$" >> release.txt
+        echo "OpenWrt${{ env.DEVICE_NAME }}_firmware" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
