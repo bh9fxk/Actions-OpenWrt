@@ -4,7 +4,7 @@
 
 调整了一些代码，默认只保留上传release。
 
-功能：（去掉了KMS vftp ddns。）
+功能：（去掉了KMS vftp ddns 上网时间控制等。）
 
 1 wol
 
