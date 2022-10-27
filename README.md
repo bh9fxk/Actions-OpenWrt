@@ -23,7 +23,7 @@
 # Actions-OpenWrt
 
 A template for building OpenWrt with GitHub Actions
-
+- [P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt/）
 ## Usage
 
 - Click the [Use this template](https://github.com/P3TERX/Actions-OpenWrt/generate) button to create a new repository.
@@ -42,4 +42,3 @@ A template for building OpenWrt with GitHub Actions
 - [Mattraks/delete-workflow-runs](https://github.com/Mattraks/delete-workflow-runs)
 - [dev-drprasad/delete-older-releases](https://github.com/dev-drprasad/delete-older-releases)
 - [peter-evans/repository-dispatch](https://github.com/peter-evans/repository-dispatch)
-- [P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt/)
