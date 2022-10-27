@@ -6,24 +6,25 @@
 
 （去掉了KMS vftp ddns 上网时间控制等。）
 
-1 ipv6
+- ipv6
 
-2 n2n
+- n2n
 
-3 helloworld
+- helloworld
 
-4 pushbot wrtbwom
+- pushbot wrtbwom
 
-5 ramfree
+- ramfree
 
-6 wol
+- wol
 
 -------------------------------------------------------------------------------------------------------------------------
 
 # Actions-OpenWrt
 
 A template for building OpenWrt with GitHub Actions
-- [P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt/）
+[P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt/)
+
 ## Usage
 
 - Click the [Use this template](https://github.com/P3TERX/Actions-OpenWrt/generate) button to create a new repository.
