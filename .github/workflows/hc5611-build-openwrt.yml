@@ -145,10 +145,15 @@ jobs:
       id: organize
       if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
+        #
+        echo "-------openwrt/bin/targets/--------"
+        ls openwrt/bin/targets/
         cd openwrt/bin/targets/*/*
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
+        echo "-----ls ${{ env.FIRMWARE }}--------"
+        ls ${{ env.FIRMWARE }}
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@v3
