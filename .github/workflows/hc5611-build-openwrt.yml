@@ -152,7 +152,7 @@ jobs:
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
-        echo "-----ls ${{ env.FIRMWARE }}--------"
+        echo "----ls '${{ env.FIRMWARE }}'-------"
         ls ${{ env.FIRMWARE }}
 
     - name: Upload firmware directory
