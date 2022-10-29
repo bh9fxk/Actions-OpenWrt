@@ -17,7 +17,7 @@ on:
         - r4a
         - r3
         - hc5611
-
+        
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
@@ -30,13 +30,12 @@ env:
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
   
-  
 jobs:
   prepare:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Show repositories information
+      - name: Show information
         run: |
           echo $(date)开始运行
           echo 源代码$REPO_URL
@@ -47,8 +46,7 @@ jobs:
     needs: prepare
     runs-on: ubuntu-22.04
 
-    steps:
-    
+    steps:    
     - name: Checkout
       uses: actions/checkout@v3
 
@@ -155,6 +153,11 @@ jobs:
         du -h --max-depth=1 ./build_dir
         du -h --max-depth=1 ./bin
 
+  release:
+    needs: [ prepare, build ]
+    runs-on: ubuntu-22.04
+    
+    steps:
     - name: Upload bin directory
       uses: actions/upload-artifact@main
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
@@ -166,6 +169,10 @@ jobs:
       id: organize
       if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
+        date
+        echo "-------openwrt/bin/targets/--------"
+        ls openwrt/bin/targets/*/*
+        echo "-----------------------------------"        
         cd openwrt/bin/targets/*/*
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
@@ -197,6 +204,12 @@ jobs:
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
 
+  delete:
+    name: Delete old workflow or Releases
+    needs: [ prepare, build, release ]
+    runs-on: ubuntu-22.04
+    
+    steps:
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2
       with:
