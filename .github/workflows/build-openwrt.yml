@@ -42,7 +42,7 @@ jobs:
           echo 使用配置文件$CONFIG_FILE
 
   build:
-    name: Build ${{ inputs.model }} OpenWrt Firmware
+    name: Build ${{ inputs.model }} Firmware
     needs: prepare
     runs-on: ubuntu-22.04
 
