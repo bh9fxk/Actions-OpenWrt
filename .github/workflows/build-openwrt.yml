@@ -38,11 +38,13 @@ jobs:
     steps:
       - name: Show repositories information
         run: |
-          echo date
-          echo $REPO_URL
-          echo $CONFIG_FILE
+          echo $(date)开始运行
+          echo 源代码$REPO_URL
+          echo 使用配置文件$CONFIG_FILE
 
   build:
+    name: Build ${{ inputs.model }} OpenWrt Firmware
+    needs: prepare
     runs-on: ubuntu-22.04
 
     steps:
