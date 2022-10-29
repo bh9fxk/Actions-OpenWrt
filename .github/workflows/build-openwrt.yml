@@ -29,8 +29,19 @@ env:
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
-
+  
+  
 jobs:
+  prepare:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Show repositories information
+        run: |
+          echo date
+          echo $REPO_URL
+          echo $CONFIG_FILE
+
   build:
     runs-on: ubuntu-22.04
 
