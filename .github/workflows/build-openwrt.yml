@@ -32,6 +32,7 @@ env:
   
 jobs:
   prepare:
+    name: Prepare
     runs-on: ubuntu-22.04
 
     steps:
