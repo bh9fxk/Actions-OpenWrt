@@ -174,10 +174,10 @@ jobs:
         
         cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
           ## Firmware Information
-          df -h /root
+          $(df -h /root)
           文件时间: $FILE_DATE
           设备名称: $DEVICE_NAME
-          固件目录：${{ env.FIRMWARE }}
+          固件目录：$FIRMWARE
           配置文件: $CONFIG_FILE
           DIY_P1_SH: $DIY_P1_SH
           DIY_P2_SH: $DIY_P2_SH
