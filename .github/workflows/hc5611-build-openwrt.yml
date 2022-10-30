@@ -24,22 +24,34 @@ env:
   TZ: Asia/Shanghai
 
 jobs:
+  prepare:
+    name: Prepare
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Show information
+        run: |
+          echo $(date)开始运行
+          echo 源代码$REPO_URL
+          echo 使用配置文件$CONFIG_FILE
+          cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
+            ## Sources
+            Time: $(date)
+            Config: $CONFIG_FILE
+            Openwrt: $REPO_URL
+            Upload Firware: $UPLOAD_FIRMWARE
+            Upload Release: $UPLOAD_RELEASE            
+          EOF
+          
   build:
+    name: Build Hc5611 Openwrt
     runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    
-    - name: 开始时间
-      run: |
-        #
-        echo "------------Start Time--------------"
-        date
-        echo "----------当前目录中的文件----------"
-        ls ${{ github.workspace }}
 
-    - name: 卸载软件包和清理Docker镜像
+    - name: 清理Docker镜像和软件包
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
@@ -134,13 +146,6 @@ jobs:
         du -h --max-depth=1 ./build_dir
         du -h --max-depth=1 ./bin
 
-    - name: Upload bin directory
-      uses: actions/upload-artifact@v3
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
-      with:
-        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: openwrt/bin
-
     - name: Organize files
       id: organize
       if: steps.compile.outputs.status == 'success' && !cancelled()
@@ -153,6 +158,26 @@ jobs:
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
+        
+    - name: Show build information
+      run: |
+        cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
+          ## Firmware Information
+          $(df -h /root)
+          文件时间: $FILE_DATE
+          设备名称: $DEVICE_NAME
+          固件目录：$FIRMWARE
+          配置文件: $CONFIG_FILE
+          DIY_P1_SH: $DIY_P1_SH
+          DIY_P2_SH: $DIY_P2_SH
+        EOF
+        
+    - name: Upload bin directory
+      uses: actions/upload-artifact@v3
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      with:
+        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: openwrt/bin
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@v3
