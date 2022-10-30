@@ -173,7 +173,9 @@ jobs:
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
-        
+
+    - name: Show build information
+      run: |
         cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
           ## Firmware Information
           $(df -h /root)
@@ -192,7 +194,7 @@ jobs:
         name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: openwrt/bin
 
-    - name: Upload firmware directory
+    - name: Upload firmware artifact
       uses: actions/upload-artifact@v3
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true'
       with:
