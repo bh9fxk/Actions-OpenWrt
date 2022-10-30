@@ -45,6 +45,8 @@ jobs:
             Time: $(date)
             Config: $CONFIG_FILE
             Openwrt: $REPO_URL
+            Upload Firware: $UPLOAD_FIRMWARE
+            Upload Release: $UPLOAD_RELEASE  
           EOF
 
   build:
