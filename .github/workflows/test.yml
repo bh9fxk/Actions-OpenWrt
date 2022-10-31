@@ -10,6 +10,8 @@ jobs:
 
     steps:
       - name: Show space information
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
           SPACE_A=$(df / | grep '/' | awk '{print $4}')
           sudo -E apt-get update
