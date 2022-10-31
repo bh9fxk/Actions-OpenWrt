@@ -1,0 +1,22 @@
+name: test
+
+on: 
+  workflow_dispatch
+  
+jobs:
+  prepare:
+    name: Prepare
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Show space information
+        run: |
+          SPACE_A=$(df / | grep '/' | awk '{print $4}')
+          sudo apt-get update
+          sudo apt-get autoremove --purge
+          SPACE_B=$(df / | grep '/' | awk '{print $4}')
+          SPACE_USD=echo $[($SPACE_A-$SPACE_B) / 102400]
+          cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
+            ## Space Used
+            Space Used: $SPACE_USD
+          EOF
