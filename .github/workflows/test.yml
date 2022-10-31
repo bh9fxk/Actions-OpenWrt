@@ -13,10 +13,14 @@ jobs:
         run: |
           SPACE_A=$(df / | grep '/' | awk '{print $4}')
           sudo -E apt-get update
+          sudo _e apt-get -y dist-upgrade
           sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get clean
           SPACE_B=$(df / | grep '/' | awk '{print $4}')
-          SPACE_USD=echo $[($SPACE_A-$SPACE_B) / 102400]
+          #SPACE_USD=echo $[($SPACE_A-$SPACE_B) / 102400]
           cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
             ## Space Used
             Space Used: $SPACE_USD
+            Space A: $SPACE_A
+            Space B: $SPACE_B
           EOF
