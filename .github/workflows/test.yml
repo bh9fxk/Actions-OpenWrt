@@ -12,8 +12,8 @@ jobs:
       - name: Show space information
         run: |
           SPACE_A=$(df / | grep '/' | awk '{print $4}')
-          sudo apt-get update
-          sudo apt-get autoremove --purge
+          sudo -E apt-get update
+          sudo -E apt-get -y autoremove --purge
           SPACE_B=$(df / | grep '/' | awk '{print $4}')
           SPACE_USD=echo $[($SPACE_A-$SPACE_B) / 102400]
           cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
