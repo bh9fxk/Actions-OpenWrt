@@ -105,6 +105,7 @@ jobs:
         #
         echo "------------Space usage------------"
         df -h $PWD
+        SPACE_A=$(df / | grep '/' | awk '{print $4}') >> $GITHUB_ENV
         echo "-----------------------------------"
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
@@ -156,6 +157,7 @@ jobs:
         cd openwrt
         echo "------------Space usage------------"
         df -h
+        SPACE_B=$(df / | grep '/' | awk '{print $4}') >> $GITHUB_ENV
         echo "-----------OpenWrt编译目录----------"
         du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
         du -h --max-depth=1 ./build_dir
@@ -178,7 +180,7 @@ jobs:
       run: |
         cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
           ## Firmware Information
-          $(df -h /root)
+          Space Used: $(echo $[($SPACE_A-$SPACE_B) / 102400])G
           文件时间: $FILE_DATE
           设备名称: $DEVICE_NAME
           固件目录：$FIRMWARE
