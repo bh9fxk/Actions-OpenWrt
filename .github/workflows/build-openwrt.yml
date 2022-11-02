@@ -200,7 +200,7 @@ jobs:
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")${{ env.DEVICE_NAME }}" >> $GITHUB_OUTPUT
         touch release.txt
-        echo "OpenWrt firmware for ${{ env.ROUTER_MODEL }}" >> release.txt
+        echo "OpenWrt for ${{ env.ROUTER_MODEL }}" >> release.txt
         cat ${{ env.FIRMWARE }}/version.buildinfo >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
