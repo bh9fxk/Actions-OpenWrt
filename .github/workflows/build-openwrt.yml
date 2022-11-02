@@ -43,10 +43,7 @@ jobs:
           echo "ROUTER_MODEL=Xiaomi Mi Router 3" >> $GITHUB_ENV
           else
           echo "ROUTER_MODEL=HiWiFi HC5611" >> $GITHUB_ENV
-          fi
-        env:
-          ROUTER_MODEL: $ROUTER_MODEL
-        
+          fi        
      
       - name: Show Prepare information
         run: |
@@ -62,7 +59,10 @@ jobs:
           EOF
 
   build:
+    env:
+      ROUTER_MODEL: $ROUTER_MODEL
     name: Build ${{ env.ROUTER_MODEL }}
+
     needs: prepare
     runs-on: ubuntu-22.04
 
