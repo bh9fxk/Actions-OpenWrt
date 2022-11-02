@@ -181,7 +181,7 @@ jobs:
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           ## Firmware Information
           路 由 器: $ROUTER_MODEL
-          使用空间: $(echo $[($SPACE_A-$SPACE_B) / 102400])G
+          使用空间: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
           文件时间: $FILE_DATE
           设备名称: $DEVICE_NAME
           固件目录: $FIRMWARE
