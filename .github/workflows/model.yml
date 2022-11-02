@@ -41,6 +41,7 @@ jobs:
           echo "${{ inputs.model }}"
           if [ "${{ inputs.model }}" == "r4a" ]; then
           echo "MODEL=Xiaomi Mi Router 4A Gigabit Edition" >> $GITHUB_ENV
+          echo ok
           fi
      
       - name: Show information
