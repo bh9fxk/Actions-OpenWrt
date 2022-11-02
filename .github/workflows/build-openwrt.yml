@@ -49,7 +49,7 @@ jobs:
      
       - name: Show Prepare information
         run: |
-          echo ${{ env.ROUTER_MODEL }}
+          echo $ROUTER_MODEL
           cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
             ## Sources
             Time: $(date +"%Y-%m-%d %H:%M %A")
@@ -61,8 +61,8 @@ jobs:
           EOF
 
   build:
-    name: Build ${{ env.ROUTER_MODEL }}
-
+    name: Build $ROUTER_MODEL
+    
     needs: prepare
     runs-on: ubuntu-22.04
 
