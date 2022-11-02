@@ -36,12 +36,9 @@ jobs:
     steps:
       - name: Show prepare information
         run: |
-          if: ${{ inputs.model }} == 'hc5611'
-          echo MODEL='HiWiFi HC5611' >> $GITHUB_ENV
-          if: ${{ inputs.model }} == 'r4a'
-          echo MODEL='Xiaomi Mi Router 4A Gigabit Edition' >> $GITHUB_ENV
-          if: ${{ inputs.model }} == 'r3'
-          echo MODEL='Xiaomi Mi Router 3' >> $GITHUB_ENV
+          chmod +x $GITHUB_WORKSPACE/model.sh
+          $GITHUB_WORKSPACE/model.sh
+         
           cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
             ## Sources
             Time: $(date +"%Y-%m-%d %H:%M %A)
