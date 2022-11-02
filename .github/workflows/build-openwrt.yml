@@ -58,7 +58,7 @@ jobs:
             Upload Firware: $UPLOAD_FIRMWARE
             Upload Release: $UPLOAD_RELEASE
           EOF
-          env ROUTER_MODEL=$ROUTER_MODEL
+          env ROUTER_MODEL="$ROUTER_MODEL"
 
   build:
     name: Build $ROUTER_MODEL
