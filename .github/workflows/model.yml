@@ -36,7 +36,7 @@ jobs:
 
     steps:    
       - name: Show r4a information
-        if: ${{ inputs.model }} == "r4a"
+        if: ${{ inputs.model }} == r4a
         run: |
           echo "MODEL=Xiaomi Mi Router 4A Gigabit Edition" >> $GITHUB_ENV
           cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
@@ -50,7 +50,7 @@ jobs:
           EOF
      
       - name: Show hc5611 information
-        if: ${{ inputs.model }} == "hc5611"
+        if: ${{ inputs.model }} == hc5611
         run: |
           echo "MODEL=HiWiFi HC5611" >> $GITHUB_ENV
           cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
@@ -64,7 +64,7 @@ jobs:
           EOF
       
       - name: Show r3 information
-        if: ${{ inputs.model }} == "r3"
+        if: ${{ inputs.model }} == r3
         run: |
           echo "MODEL=Xiaomi Mi Router 3" >> $GITHUB_ENV
           cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
