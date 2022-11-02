@@ -36,10 +36,10 @@ jobs:
 
     steps:    
       - name: Show r4a information
-        if: "${{ inputs.model }} == r4a"
+        if: ${{ inputs.model }} == r4a
         run: |
           echo "MODEL=Xiaomi Mi Router 4A Gigabit Edition" >> $GITHUB_ENV
-          cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
+          cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
             ## Sources
             Time: $(date +"%Y-%m-%d %H:%M %A)
             Model: $MODLE
@@ -53,7 +53,7 @@ jobs:
         if: ${{ inputs.model }} == hc5611
         run: |
           echo "MODEL=HiWiFi HC5611" >> $GITHUB_ENV
-          cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
+          cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
             ## Sources
             Time: $(date +"%Y-%m-%d %H:%M %A)
             Model: $MODLE
