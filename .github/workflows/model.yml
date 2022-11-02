@@ -41,36 +41,12 @@ jobs:
           echo "${{ inputs.model }}"
           if [ "${{ inputs.model }}" == "r4a" ]; then
           echo "MODEL=Xiaomi Mi Router 4A Gigabit Edition" >> $GITHUB_ENV
-          cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
-            ## Sources
-            Time: $(date +"%Y-%m-%d %H:%M %A)
-            Model: $MODLE
-            Config: $CONFIG_FILE
-            Openwrt: $REPO_URL
-            Upload Firware: $UPLOAD_FIRMWARE
-            Upload Release: $UPLOAD_RELEASE
-          EOF
           fi
      
-      - name: Show hc5611 information
-        if: ${{ inputs.model }} == hc5611
+      - name: Show information
         run: |
-          echo "MODEL=HiWiFi HC5611" >> $GITHUB_ENV
+          echo $MODLE
           cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
-            ## Sources
-            Time: $(date +"%Y-%m-%d %H:%M %A)
-            Model: $MODLE
-            Config: $CONFIG_FILE
-            Openwrt: $REPO_URL
-            Upload Firware: $UPLOAD_FIRMWARE
-            Upload Release: $UPLOAD_RELEASE
-          EOF
-      
-      - name: Show r3 information
-        if: ${{ inputs.model }} == r3
-        run: |
-          echo "MODEL=Xiaomi Mi Router 3" >> $GITHUB_ENV
-          cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
             ## Sources
             Time: $(date +"%Y-%m-%d %H:%M %A)
             Model: $MODLE
