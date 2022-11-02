@@ -27,6 +27,7 @@ env:
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
+  r4a: Xiaomi Mi Router 4A Gigabit Edition
   
 jobs:
   prepare:
@@ -61,7 +62,7 @@ jobs:
           env ROUTER_MODEL="$ROUTER_MODEL"
 
   build:
-    name: Build $ROUTER_MODEL
+    name: Build ${{ inputs.model }}
     
     needs: prepare
     runs-on: ubuntu-22.04
