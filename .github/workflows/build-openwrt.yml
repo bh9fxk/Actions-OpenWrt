@@ -35,23 +35,24 @@ jobs:
 
     steps:    
       - name: Router model
+        id: router
         run: |
           echo "${{ inputs.model }}"
           if [ "${{ inputs.model }}" == "r4a" ]; then
-          echo "ROUTER_MODEL=Xiaomi Mi Router 4A Gigabit Edition" >> $GITHUB_ENV
+          echo "ROUTER_MODEL=Xiaomi Mi Router 4A Gigabit Edition" >> $GITHUB_OUTPUT
           elif [ "${{ inputs.model }}" == "r3" ]; then
-          echo "ROUTER_MODEL=Xiaomi Mi Router 3" >> $GITHUB_ENV
+          echo "ROUTER_MODEL=Xiaomi Mi Router 3" >> $GITHUB_OUTPUT
           else
-          echo "ROUTER_MODEL=HiWiFi HC5611" >> $GITHUB_ENV
+          echo "ROUTER_MODEL=HiWiFi HC5611" >> $GITHUB_OUTPUT
           fi        
      
       - name: Show Prepare information
         run: |
-          echo ${{ env.ROUTER_MODEL }}
+          echo ${{ steps.router.output.ROUTER_MODEL }}
           cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
             ## Sources
             Time: $(date +"%Y-%m-%d %H:%M %A")
-            Router Model: $ROUTER_MODEL
+            Router Model: ${{ steps.router.output.ROUTER_MODEL }}
             Config: $CONFIG_FILE
             Openwrt: $REPO_URL
             Upload Firware: $UPLOAD_FIRMWARE
@@ -59,7 +60,7 @@ jobs:
           EOF
 
   build:
-    name: Build ${{ needs.prepare.env.ROUTER_MODEL }}
+    name: Build ${{ needs.prepare.output.ROUTER_MODEL }}
 
     needs: prepare
     runs-on: ubuntu-22.04
