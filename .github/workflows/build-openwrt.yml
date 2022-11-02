@@ -187,7 +187,7 @@ jobs:
           固件目录: $FIRMWARE
           配置文件: $CONFIG_FILE
           修改脚本: $DIY_P1_SH $DIY_P2_SH
-          Version Info: cat ${{ env.FIRMWARE }}/version.buildinfo
+          Version Info: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
         EOF
         
     - name: Upload bin directory
