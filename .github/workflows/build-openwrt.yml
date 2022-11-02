@@ -1,22 +1,21 @@
 #
 # Description: Build OpenWrt using GitHub Actions
 #
-
 name: Build OpenWrt
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       model:
         description: 选择需要编译固件的路由器型号
         required: true
-        default: 'r4a' 
+        default: 'r4a'
         type: choice
         options:
         - r4a
         - r3
         - hc5611
-        
+
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
@@ -28,45 +27,40 @@ env:
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
-  
+
 jobs:
   prepare:
     name: Prepare
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Show information
+      - name: Show prepare information
         run: |
-          echo $(date)开始运行
-          echo 源代码$REPO_URL
-          echo 使用配置文件$CONFIG_FILE
-          cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
+          if: ${{ inputs.model }} == 'hc5611'
+          echo MODEL='HiWiFi HC5611' >> $GITHUB_ENV
+          if: ${{ inputs.model }} == 'r4a'
+          echo MODEL='Xiaomi Mi Router 4A Gigabit Edition' >> $GITHUB_ENV
+          if: ${{ inputs.model }} == 'r3'
+          echo MODEL='Xiaomi Mi Router 3' >> $GITHUB_ENV
+          cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
             ## Sources
-            Time: $(date +"%Y-%m-%d% H:%M %A)
-            Model: ${{ inputs.model }}
+            Time: $(date +"%Y-%m-%d %H:%M %A)
+            Model: $MODLE
             Config: $CONFIG_FILE
             Openwrt: $REPO_URL
             Upload Firware: $UPLOAD_FIRMWARE
-            Upload Release: $UPLOAD_RELEASE  
+            Upload Release: $UPLOAD_RELEASE
           EOF
 
   build:
-    name: Build ${{ inputs.model }} Firmware
+    name: Build $MODLE
     needs: prepare
     runs-on: ubuntu-22.04
 
-    steps:    
+    steps:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: 路由器型号
-      run: |
-        #
-        echo "-----------------------------------"
-        echo "开始编译路由器${{ inputs.model }}的OpenWrt固件"
-        echo "----------当前目录中的文件----------"
-        ls ${{ github.workspace }}
-             
     - name: 清理Docker镜像和软件包
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -78,7 +72,7 @@ jobs:
     - name: 安装依赖软件包
       env:
         DEBIAN_FRONTEND: noninteractive
-      run: | 
+      run: |
         sudo -E apt-get update
         echo "---------install依赖包-------------"
         sudo -E apt-get -y install $(cat $GITHUB_WORKSPACE/depends-ubuntu)
@@ -88,10 +82,10 @@ jobs:
     - name: 清理空间
       env:
         DEBIAN_FRONTEND: noninteractive
-      run: | 
+      run: |
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
-        
+
     - name: 设置时区和工作目录
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -103,9 +97,6 @@ jobs:
     - name: Clone source code
       working-directory: /workdir
       run: |
-        #
-        echo "------------Space usage------------"
-        df -h $PWD
         echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         echo "-----------------------------------"
         git clone $REPO_URL -b $REPO_BRANCH openwrt
@@ -156,22 +147,16 @@ jobs:
       if: (!cancelled())
       run: |
         cd openwrt
-        echo "------------Space usage------------"
-        df -h
         echo "SPACE_B=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         echo "-----------OpenWrt编译目录----------"
         du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
         du -h --max-depth=1 ./build_dir
-        du -h --max-depth=1 ./bin        
+        du -h --max-depth=1 ./bin
 
     - name: Organize files
       id: organize
       if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
-        date
-        echo "-------openwrt/bin/targets/--------"
-        ls openwrt/bin/targets/*/*
-        echo "-----------------------------------"        
         cd openwrt/bin/targets/*/*
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
@@ -179,15 +164,15 @@ jobs:
 
     - name: Show build information
       run: |
-        cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
+        cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           ## Firmware Information
-          Space Used: $(echo $[($SPACE_A-$SPACE_B) / 102400])G
+          路 由 器: $MODLE
+          使用空间: $(echo $[($SPACE_A-$SPACE_B) / 102400])G
           文件时间: $FILE_DATE
           设备名称: $DEVICE_NAME
-          固件目录：$FIRMWARE
+          固件目录: $FIRMWARE
           配置文件: $CONFIG_FILE
-          DIY_P1_SH: $DIY_P1_SH
-          DIY_P2_SH: $DIY_P2_SH
+          修改脚本: $DIY_P1_SH $DIY_P2_SH
         EOF
         
     - name: Upload bin directory
@@ -210,7 +195,7 @@ jobs:
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")${{ env.DEVICE_NAME }}" >> $GITHUB_OUTPUT
         touch release.txt
-        echo "OpenWrt${{ env.DEVICE_NAME }}_firmware" >> release.txt
+        echo "OpenWrt firmware for $${{ env.MODEL }}" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
