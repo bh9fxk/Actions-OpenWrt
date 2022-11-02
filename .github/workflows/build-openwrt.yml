@@ -59,7 +59,7 @@ jobs:
         EOF
 
   build:
-    name: Build {{ inputs.model }} Firmware
+    name: Build ${{ inputs.model }} Firmware
     needs: prepare
     runs-on: ubuntu-22.04
 
