@@ -46,11 +46,11 @@ jobs:
      
       - name: Show information
         run: |
-          echo ${{ env.MODLE }}
+          echo $MODLE
           cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
             ## Sources
             Time: $(date +"%Y-%m-%d %H:%M %A)
-            Model: ${{ env.MODLE }}
+            Model: $MODLE
             Config: $CONFIG_FILE
             Openwrt: $REPO_URL
             Upload Firware: $UPLOAD_FIRMWARE
