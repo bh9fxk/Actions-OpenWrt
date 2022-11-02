@@ -44,6 +44,9 @@ jobs:
           else
           echo "ROUTER_MODEL=HiWiFi HC5611" >> $GITHUB_ENV
           fi
+        env:
+          ROUTER_MODEL: $ROUTER_MODEL
+        
      
       - name: Show Prepare information
         run: |
@@ -59,7 +62,7 @@ jobs:
           EOF
 
   build:
-    name: Build $ROUTER_MODEL
+    name: Build ${{ env.ROUTER_MODEL }}
     needs: prepare
     runs-on: ubuntu-22.04
 
