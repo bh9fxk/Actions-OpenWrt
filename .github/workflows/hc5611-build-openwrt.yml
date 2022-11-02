@@ -33,7 +33,7 @@ jobs:
           echo 使用配置文件$CONFIG_FILE
           cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
             ## Sources
-            Time: $(date)
+            Time: $(date +"%Y-%m-%d %H:%M %A")
             Config: $CONFIG_FILE
             Openwrt: $REPO_URL
             Upload Firware: $UPLOAD_FIRMWARE
@@ -85,7 +85,6 @@ jobs:
       working-directory: /workdir
       run: |
         #
-        echo "------------Space usage------------"
         df -hT $PWD
         echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         echo "----------克隆OpenWrt源码----------"
@@ -187,8 +186,8 @@ jobs:
       if: env.UPLOAD_RELEASE == 'true' && steps.organize.outputs.status == 'success'
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")${{ env.DEVICE_NAME }}" >> $GITHUB_OUTPUT
-        
-        echo "OpenWrt${{ env.DEVICE_NAME }}_firmware" >> release.txt
+        touch release.txt
+        echo "OpenWrt for HiWiFi HC5611" >> release.txt
         cat ${{ env.FIRMWARE }}/version.buildinfo >> release.txt
         
         echo "status=success" >> $GITHUB_OUTPUT
