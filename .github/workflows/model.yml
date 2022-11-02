@@ -39,7 +39,7 @@ jobs:
         
         run: |
           echo "${{ inputs.model }}"
-          if ${{ inputs.model }} == r4a; then
+          if "${{ inputs.model }}" == "r4a"; then
           echo "MODEL=Xiaomi Mi Router 4A Gigabit Edition" >> $GITHUB_ENV
           cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
             ## Sources
