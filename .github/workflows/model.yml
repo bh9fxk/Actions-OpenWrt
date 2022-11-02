@@ -40,16 +40,17 @@ jobs:
         run: |
           echo "${{ inputs.model }}"
           if [ "${{ inputs.model }}" == "r4a" ]; then
-          echo "MODEL=Xiaomi-Mi-Router-4A-Gigabit-Edition" >> $GITHUB_ENV
+          echo "ROUTER_MODEL=Xiaomi Mi Router 4A Gigabit Edition" >> $GITHUB_ENV
           echo ok
           fi
      
       - name: Show information
         run: |
-          echo $MODLE
+          echo $ROUTER_MODEL
           cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
             ## Sources
-            Time: $(date +"%Y-%m-%d %H:%M %A)
+            Time: $(date +"%Y-%m-%d %H:%M %A")
+            Router Modle: $ROUTER_MODEL
             Config: $CONFIG_FILE
             Openwrt: $REPO_URL
             Upload Firware: $UPLOAD_FIRMWARE
