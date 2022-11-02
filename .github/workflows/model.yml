@@ -53,7 +53,7 @@ jobs:
           cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
             ## Sources
             Time: $(date +"%Y-%m-%d %H:%M %A")
-            Router Modle: $ROUTER_MODEL
+            Router Model: $ROUTER_MODEL
             Config: $CONFIG_FILE
             Openwrt: $REPO_URL
             Upload Firware: $UPLOAD_FIRMWARE
