@@ -32,25 +32,16 @@ jobs:
   prepare:
     name: Prepare
     runs-on: ubuntu-22.04
-    outputs:
-      env: ${{ steps.router.outputs.env }}
   
-    steps:    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    
     - name: Router model
       id: router
       run: |
-        echo "${{ inputs.model }}"
-        if [ "${{ inputs.model }}" == "r4a" ]; then
-        echo "ROUTER_MODEL=Xiaomi Mi Router 4A Gigabit Edition"
-        elif [ "${{ inputs.model }}" == "r3" ]; then
-        echo "ROUTER_MODEL=Xiaomi Mi Router 3"
-        else
-        echo "ROUTER_MODEL=HiWiFi HC5611"
-        fi
-        cat <<EOF | sed -E 's/^  //' >>$GITHUB_ENV
-            ROUTER_MODEL=$ROUTER_MODEL
-          EOF
-        echo "env=$(cat $GITHUB_ENV | base64 -w 0)" >>$GITHUB_OUTPUT
+        chmod +x $GITHUB_WORKSPACE/model.sh
+        $GITHUB_WORKSPACE/model.sh
      
     - name: Show Prepare information
       run: |
@@ -72,12 +63,13 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: Import env
-      run: |
-        echo "$(echo "${{ needs.prepare.outputs.env }}" | base64 -d)" >>$GITHUB_ENV
-        echo "{{ needs.prepare.outputs.env }}"
     - name: Checkout
       uses: actions/checkout@v3
+    
+    - name: 路由器型号
+      run: |
+        chmod +x $GITHUB_WORKSPACE/model.sh
+        $GITHUB_WORKSPACE/model.sh
 
     - name: 清理Docker镜像和软件包
       env:
