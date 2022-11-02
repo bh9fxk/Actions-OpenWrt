@@ -46,7 +46,7 @@ jobs:
         else
         echo "ROUTER_MODEL=HiWiFi HC5611" >> $GITHUB_ENV
         fi
-        echo "env=$(ROUTER_MODEL=$ROUTER_MODEL)" >>$GITHUB_OUTPUT
+        echo "env=echo $(ROUTER_MODEL=$ROUTER_MODEL)" >>$GITHUB_OUTPUT
      
     - name: Show Prepare information
       run: |
