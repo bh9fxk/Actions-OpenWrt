@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 #
-A="${{ inputs.model }}"
-if [ $A == "hc5611" ]; then
-    echo MODEL='HiWiFi HC5611' >> $GITHUB_ENV
-elif [ $A == "r4a"]; then
-    echo MODEL='Xiaomi Mi Router 4A Gigabit Edition' >> $GITHUB_ENV
+if [ "${{ inputs.model }}" == "r4a" ]; then
+    echo "ROUTER_MODEL=Xiaomi Mi Router 4A Gigabit Edition" >>$GITHUB_ENV
+elif [ "${{ inputs.model }}" == "r3" ]; then
+    echo "ROUTER_MODEL=Xiaomi Mi Router 3" >>$GITHUB_ENV
 else
-    echo MODEL='Xiaomi Mi Router 3' >> $GITHUB_ENV
+    echo "ROUTER_MODEL=HiWiFi HC5611" >>$GITHUB_ENV
 fi
