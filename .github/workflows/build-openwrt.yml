@@ -59,7 +59,7 @@ jobs:
           EOF
 
   build:
-    name: Build ${{ env.ROUTER_MODEL }}
+    name: Build $ROUTER_MODEL
     needs: prepare
     runs-on: ubuntu-22.04
 
