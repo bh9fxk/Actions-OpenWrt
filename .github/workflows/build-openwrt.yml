@@ -64,7 +64,7 @@ jobs:
         echo "-----------------------------------"
         echo "开始编译路由器${{ inputs.model }}的OpenWrt固件"
         echo "----------当前目录中的文件----------"
-        ls ${{ github.workspace }}  
+        ls ${{ github.workspace }}
              
     - name: 清理Docker镜像和软件包
       env:
@@ -105,7 +105,7 @@ jobs:
         #
         echo "------------Space usage------------"
         df -h $PWD
-        SPACE_A=$(df / | grep '/' | awk '{print $4}') >> $GITHUB_ENV
+        echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         echo "-----------------------------------"
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
@@ -157,7 +157,7 @@ jobs:
         cd openwrt
         echo "------------Space usage------------"
         df -h
-        SPACE_B=$(df / | grep '/' | awk '{print $4}') >> $GITHUB_ENV
+        echo "SPACE_B=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         echo "-----------OpenWrt编译目录----------"
         du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
         du -h --max-depth=1 ./build_dir
