@@ -71,7 +71,7 @@ jobs:
     - name: Import env
       run: |
         echo "{{ needs.prepare.outputs.env }}" >>$GITHUB_ENV
-        
+        echo "{{ needs.prepare.outputs.env }}"
     - name: Checkout
       uses: actions/checkout@v3
     
