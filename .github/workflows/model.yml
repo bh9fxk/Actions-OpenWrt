@@ -38,7 +38,7 @@ jobs:
       - name: Show r4a information
         if: ${{ inputs.model }} == r4a
         run: |
-          ${{ inputs.model }}
+          echo "${{ inputs.model }}"
           echo "MODEL=Xiaomi Mi Router 4A Gigabit Edition" >> $GITHUB_ENV
           cat <<EOF | sed -E 's/^  //' >>$GITHUB_STEP_SUMMARY
             ## Sources
