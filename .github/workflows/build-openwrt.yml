@@ -226,9 +226,11 @@ jobs:
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")${{ env.DEVICE_NAME }}" >> $GITHUB_OUTPUT
         touch release.txt
+        
         echo "OpenWrt for ${{ needs.prepare.outputs.ROUTER_MODEL }}" >> release.txt
         echo "IP地址: $IPADD" >> release.txt
-        cat ${{ env.FIRMWARE }}/version.buildinfo >> release.txt
+        echo "Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo) >> release.txt
+        
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
