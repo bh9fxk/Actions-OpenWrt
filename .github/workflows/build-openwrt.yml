@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       model:
-        description: 选择需要编译固件的路由器型号
+        description: 选择路由器型号
         required: true
         default: 'r4a'
         type: choice
@@ -15,6 +15,21 @@ on:
         - r4a
         - r3
         - hc5611
+      bin:
+        description: 上传固件BIN文件，默认：否
+        required: true
+        default: 'false'
+        type: boolean
+      firmware:
+        description: 上传固件到Artifact，默认：是
+        required: true
+        default: 'true'
+        type: boolean
+      release:
+        description: 是否发布固件，默认：是
+        required: true
+        default: 'true'
+        type: boolean
         
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -23,57 +38,51 @@ env:
   CONFIG_FILE: ${{ inputs.model }}.config
   DIY_P1_SH: ${{ inputs.model }}-diy-part1.sh
   DIY_P2_SH: ${{ inputs.model }}-diy-part2.sh
-  UPLOAD_BIN_DIR: false
-  UPLOAD_FIRMWARE: true
-  UPLOAD_RELEASE: true
+  UPLOAD_BIN_DIR: ${{ inputs.bin }}
+  UPLOAD_FIRMWARE: ${{ inputs.firmware }}
+  UPLOAD_RELEASE: ${{ inputs.release }}
   TZ: Asia/Shanghai
   
 jobs:
   prepare:
-    name: Prepare
+    name: Prepare ${{ inputs.model }}
     runs-on: ubuntu-22.04
+
+    outputs:
+      ROUTER_MODEL: ${{ steps.router.outputs.ROUTER_MODEL }}
     
     steps:
-    - name: Router model
+    - name: Determine router model
       id: router
       run: |
         if [ "${{ inputs.model }}" == "r4a" ]; then
-        echo "ROUTER_MODEL=Xiaomi Mi Router 4A Gigabit Edition" >>$GITHUB_ENV
+        echo "ROUTER_MODEL=Xiaomi Mi Router 4A Gigabit Edition" >> $GITHUB_OUTPUT
         elif [ "${{ inputs.model }}" == "r3" ]; then
-        echo "ROUTER_MODEL=Xiaomi Mi Router 3" >>$GITHUB_ENV
+        echo "ROUTER_MODEL=Xiaomi Mi Router 3" >> $GITHUB_OUTPUT
         else
-        echo "ROUTER_MODEL=HiWiFi HC5611" >>$GITHUB_ENV
+        echo "ROUTER_MODEL=HiWiFi HC5611" >> $GITHUB_OUTPUT
         fi
-     
-    - name: Show Prepare information
+
+    - name: Show prepare information
       run: |
         echo $ROUTER_MODEL
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
-          ## Sources
+          # Sources
           Time: $(date +"%Y-%m-%d %H:%M %A")
-          Router Model: ${{env.ROUTER_MODEL }}
+          Router Model: ${{ steps.router.outputs.ROUTER_MODEL }}
           Config: $CONFIG_FILE
           Openwrt: $REPO_URL
           Upload Firware: $UPLOAD_FIRMWARE
           Upload Release: $UPLOAD_RELEASE
+          Upload Bin: $UPLOAD_BIN_DIR
         EOF
 
   build:
-    name: Build ${{ inputs.model }} Firmware
+    name: Build ${{ needs.prepare.outputs.ROUTER_MODEL }}
     needs: prepare
     runs-on: ubuntu-22.04
-
+    
     steps:
-    - name: 路由器型号
-      run: |
-        if [ "${{ inputs.model }}" == "r4a" ]; then
-        echo "ROUTER_MODEL=Xiaomi Mi Router 4A Gigabit Edition" >>$GITHUB_ENV
-        elif [ "${{ inputs.model }}" == "r3" ]; then
-        echo "ROUTER_MODEL=Xiaomi Mi Router 3" >>$GITHUB_ENV
-        else
-        echo "ROUTER_MODEL=HiWiFi HC5611" >>$GITHUB_ENV
-        fi
-        
     - name: Checkout
       uses: actions/checkout@v3
 
@@ -180,7 +189,7 @@ jobs:
       run: |
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           ## Firmware Information
-          路 由 器: $ROUTER_MODEL
+          路 由 器: ${{ needs.prepare.outputs.ROUTER_MODEL }}
           使用空间: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
           文件时间: $FILE_DATE
           设备名称: $DEVICE_NAME
@@ -210,7 +219,7 @@ jobs:
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")${{ env.DEVICE_NAME }}" >> $GITHUB_OUTPUT
         touch release.txt
-        echo "OpenWrt for $ROUTER_MODEL" >> release.txt
+        echo "OpenWrt for ${{ needs.prepare.outputs.ROUTER_MODEL }}" >> release.txt
         cat ${{ env.FIRMWARE }}/version.buildinfo >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
