@@ -110,6 +110,7 @@ jobs:
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
+        echo "IPADD=$(grep "lan)" openwrt/package/base-files/files/bin/config_generate | awk -F "\"" '{print $2}')" >> $GITHUB_ENV
 
     - name: Download package
       id: package
@@ -159,14 +160,14 @@ jobs:
           Space Used: $(echo $[($SPACE_A-$SPACE_B) / 102400])G
           路 由 器：HiWiFi HC5611
           文件时间: $FILE_DATE
-          设备名称: $DEVICE_NAME
-          Version Info: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
-          固件目录：$FIRMWARE
+          设备名称: $DEVICE_NAME          
           配置文件: $CONFIG_FILE
+          IP地址：$IPADD
+          固件目录：$FIRMWARE
+          Version Info: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
           $(df -h /)
-          Bin: 
+          Bin Files: 
           $(ls openwrt/bin/targets/*/*)
-          
         EOF
         
     - name: Upload bin directory
