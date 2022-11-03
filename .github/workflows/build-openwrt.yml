@@ -67,7 +67,7 @@ jobs:
       run: |
         echo $ROUTER_MODEL
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
-          # Sources
+          ## Sources
           Time: $(date +"%Y-%m-%d %H:%M %A")
           Router Model: ${{ steps.router.outputs.ROUTER_MODEL }}
           Config: $CONFIG_FILE
