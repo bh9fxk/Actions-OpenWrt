@@ -71,7 +71,7 @@ jobs:
           Time: $(date +"%Y-%m-%d %H:%M %A")
           Router Model: ${{ steps.router.outputs.ROUTER_MODEL }}
           Config File: $CONFIG_FILE
-          Script File: $DIY_P1_SH $DIY_P2_SH
+          Script Files: $DIY_P1_SH $DIY_P2_SH
           Openwrt Source: $REPO_URL
           Upload Firware: $UPLOAD_FIRMWARE
           Upload Release: $UPLOAD_RELEASE
@@ -199,8 +199,9 @@ jobs:
           设备名称: $DEVICE_NAME
           固件目录: $FIRMWARE
           Version Info: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
-          Bin: $(ls openwrt/bin)
           $(df -h /)
+          Bin Files: 
+          $(ls openwrt/bin/*/*/*/)
         EOF
         
     - name: Upload bin directory
