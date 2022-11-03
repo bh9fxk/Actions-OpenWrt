@@ -70,11 +70,13 @@ jobs:
           ## Sources
           Time: $(date +"%Y-%m-%d %H:%M %A")
           Router Model: ${{ steps.router.outputs.ROUTER_MODEL }}
-          Config: $CONFIG_FILE
-          Openwrt: $REPO_URL
+          Config File: $CONFIG_FILE
+          Script File: $DIY_P1_SH $DIY_P2_SH
+          Openwrt Source: $REPO_URL
           Upload Firware: $UPLOAD_FIRMWARE
           Upload Release: $UPLOAD_RELEASE
           Upload Bin: $UPLOAD_BIN_DIR
+          $(df -h /)
         EOF
 
   build:
@@ -122,6 +124,7 @@ jobs:
     - name: Clone source code
       working-directory: /workdir
       run: |
+        df -h
         echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
@@ -171,6 +174,7 @@ jobs:
       if: (!cancelled())
       run: |
         cd openwrt
+        df -h
         echo "SPACE_B=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
         du -h --max-depth=1 ./build_dir
@@ -194,9 +198,9 @@ jobs:
           文件时间: $FILE_DATE
           设备名称: $DEVICE_NAME
           固件目录: $FIRMWARE
-          配置文件: $CONFIG_FILE
-          修改脚本: $DIY_P1_SH $DIY_P2_SH
           Version Info: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
+          Bin: $(ls openwrt/bin)
+          $(df -h /)
         EOF
         
     - name: Upload bin directory
