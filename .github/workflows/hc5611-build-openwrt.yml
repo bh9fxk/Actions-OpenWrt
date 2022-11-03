@@ -31,10 +31,14 @@ jobs:
           cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
             ## Sources
             Time: $(date +"%Y-%m-%d %H:%M %A")
-            Config: $CONFIG_FILE
-            Openwrt: $REPO_URL
+            Router Model: HiWiFi HC5611
+            Config File: $CONFIG_FILE
+            Script: $DIY_P1_SH $DIY_P2_SH
+            Openwrt Source: $REPO_URL
             Upload Firware: $UPLOAD_FIRMWARE
-            Upload Release: $UPLOAD_RELEASE            
+            Upload Release: $UPLOAD_RELEASE
+            Upload Bin: $UPLOAD_BIN_DIR
+            $(df -h /)
           EOF
           
   build:
@@ -159,8 +163,8 @@ jobs:
           Version Info: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
           固件目录：$FIRMWARE
           配置文件: $CONFIG_FILE
-          DIY SH: $DIY_P1_SH $DIY_P2_SH
-          bin: $(ls openwrt/bin)
+          Bin: $(ls openwrt/bin)
+          $(df -h /)
         EOF
         
     - name: Upload bin directory
