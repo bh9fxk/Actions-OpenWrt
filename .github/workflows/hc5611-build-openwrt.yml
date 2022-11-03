@@ -159,7 +159,7 @@ jobs:
       run: |
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           ## Firmware Information
-          Space Used: $(echo $[($SPACE_A-$SPACE_B) / 102400])G
+          Space Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
           路 由 器：HiWiFi HC5611
           文件时间: $FILE_DATE
           设备名称: $DEVICE_NAME          
@@ -192,8 +192,10 @@ jobs:
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")${{ env.DEVICE_NAME }}" >> $GITHUB_OUTPUT
         touch release.txt
+        
         echo "OpenWrt for HiWiFi HC5611" >> release.txt
-        cat ${{ env.FIRMWARE }}/version.buildinfo >> release.txt
+        echo "IP地址: $IPADD" >> release.txt
+        echo "Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo) >> release.txt
         
         echo "status=success" >> $GITHUB_OUTPUT
 
