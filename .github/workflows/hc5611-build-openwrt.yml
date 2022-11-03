@@ -22,15 +22,12 @@ env:
 
 jobs:
   prepare:
-    name: Prepare
+    name: Prepare HiWiFi HC5611
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Show information
+      - name: Show prepare information
         run: |
-          echo $(date)开始运行
-          echo 源代码$REPO_URL
-          echo 使用配置文件$CONFIG_FILE
           cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
             ## Sources
             Time: $(date +"%Y-%m-%d %H:%M %A")
@@ -41,7 +38,7 @@ jobs:
           EOF
           
   build:
-    name: Build Hc5611 Openwrt
+    name: Build HiWiFi HC5611
     runs-on: ubuntu-22.04
 
     steps:
@@ -84,10 +81,8 @@ jobs:
     - name: Clone source code
       working-directory: /workdir
       run: |
-        #
-        df -hT $PWD
+        df -h
         echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
-        echo "----------克隆OpenWrt源码----------"
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
@@ -158,9 +153,10 @@ jobs:
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           ## Firmware Information
           Space Used: $(echo $[($SPACE_A-$SPACE_B) / 102400])G
+          路 由 器：HiWiFi HC5611
           文件时间: $FILE_DATE
           设备名称: $DEVICE_NAME
-          Version Info: cat ${{ env.FIRMWARE }}/version.buildinfo
+          Version Info: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
           固件目录：$FIRMWARE
           配置文件: $CONFIG_FILE
           DIY SH: $DIY_P1_SH $DIY_P2_SH
