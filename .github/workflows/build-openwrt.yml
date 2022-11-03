@@ -149,6 +149,7 @@ jobs:
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
+        echo "IPADD=$(grep "lan)" openwrt/package/base-files/files/bin/config_generate | awk -F "\"" '{print $2}')" >> $GITHUB_ENV
 
     - name: Download package
       id: package
@@ -198,10 +199,11 @@ jobs:
           文件时间: $FILE_DATE
           设备名称: $DEVICE_NAME
           固件目录: $FIRMWARE
+          IP地址：$IPADD
           Version Info: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
           $(df -h /)
           Bin Files: 
-          $(ls openwrt/bin/*/*/*/)
+          $(ls openwrt/bin/targets/*/*)
         EOF
         
     - name: Upload bin directory
@@ -225,6 +227,7 @@ jobs:
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")${{ env.DEVICE_NAME }}" >> $GITHUB_OUTPUT
         touch release.txt
         echo "OpenWrt for ${{ needs.prepare.outputs.ROUTER_MODEL }}" >> release.txt
+        echo "IP地址: $IPADD" >> release.txt
         cat ${{ env.FIRMWARE }}/version.buildinfo >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
