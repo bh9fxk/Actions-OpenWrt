@@ -163,8 +163,10 @@ jobs:
           Version Info: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
           固件目录：$FIRMWARE
           配置文件: $CONFIG_FILE
-          Bin: $(ls openwrt/bin)
           $(df -h /)
+          Bin: 
+          $(ls openwrt/bin/targets/*/*)
+          
         EOF
         
     - name: Upload bin directory
