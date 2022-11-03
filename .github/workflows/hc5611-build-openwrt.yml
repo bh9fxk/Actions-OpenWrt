@@ -112,7 +112,7 @@ jobs:
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
-        echo "IPADD=$(grep "lan)" openwrt/package/base-files/files/bin/config_generate | awk -F "\"" '{print $2}')" >> $GITHUB_ENV
+        echo "IPADD=$(grep "lan)" package/base-files/files/bin/config_generate | awk -F "\"" '{print $2}')" >> $GITHUB_ENV
 
     - name: Download package
       id: package
