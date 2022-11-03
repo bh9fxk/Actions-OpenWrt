@@ -82,7 +82,6 @@ jobs:
           使用空间: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
           配置文件: $CONFIG_FILE
           修改脚本: $DIY_P1_SH $DIY_P2_SH
-          Version Info: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
         EOF
         
   delete:
