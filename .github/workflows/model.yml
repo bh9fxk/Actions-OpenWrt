@@ -72,7 +72,6 @@ jobs:
     - name: Check space usage
       if: (!cancelled())
       run: |
-        cd openwrt
         echo "SPACE_B=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
 
     - name: Show build information
@@ -86,3 +85,14 @@ jobs:
           修改脚本: $DIY_P1_SH $DIY_P2_SH
           Version Info: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
         EOF
+  delete:
+    name: Delete old workflow
+    needs: [ prepare, build ]
+    runs-on: ubuntu-22.04
+    
+    steps:
+    - name: Delete workflow runs
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+        retain_days: 1
+        keep_minimum_runs: 0
