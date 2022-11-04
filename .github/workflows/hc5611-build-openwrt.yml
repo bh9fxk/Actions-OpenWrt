@@ -25,6 +25,10 @@ jobs:
   prepare:
     name: Prepare HiWiFi HC5611
     runs-on: ubuntu-22.04
+    
+    outputs:
+      REVISION: ${{ steps.kernel.outputs.REVISION }}
+      KERNEL: ${{ steps.kernel.outputs.KERNEL }}
 
     steps:
       - name: Show prepare information
@@ -39,9 +43,34 @@ jobs:
             Upload Firware: $UPLOAD_FIRMWARE
             Upload Release: $UPLOAD_RELEASE
             Upload Bin: $UPLOAD_BIN_DIR
-            $(df -h /)
           EOF
-          
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Git Clone source code
+        run: |
+          df -h
+          git clone $REPO_URL -b $REPO_BRANCH openwrt
+    
+      - name: Show kenerl and revision
+        id: kernel
+        run: |
+          cd openwrt
+          echo "REVISION=$(grep 'DISTRIB_REVISION=' package/lean/default-settings/files/zzz-default-settings | awk -F ''\' '{print $2}')" >> $GITHUB_OUTPUT
+          TESTING_KERNEL=$(grep CONFIG_TESTING_KERNEL .config | awk -F= '{print $2}')
+          if [ "TESTING_KERNEL" == "y" ]; then
+            echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.10 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_OUTPUT
+          else
+            echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.4 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_OUTPUT
+          fi
+          cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
+            #### Kernel and Revision
+            固件版本: $REVISION
+            内核版本: $KERNEL
+            网关地址：$IPADD
+          EOF
+
   build:
     name: Build HiWiFi HC5611
     needs: prepare
@@ -176,12 +205,15 @@ jobs:
       run: |
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           #### Firmware Information
-          Space Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
           文件名称: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          固件版本: ${{ needs.prepare.outputs.REVISION }}
+          内核版本: ${{ needs.prepare.outputs.KERNEL }}
+          Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
+          网关地址: $IPADD
           固件目录：$FIRMWARE
-          Version Info: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
+          Space Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
           $(df -h /)
-          Bin Files: 
+          Bin Files:
           $(ls openwrt/bin/targets/*/*)
         EOF
         
@@ -208,7 +240,7 @@ jobs:
         
         cat <<EOF | sed -E 's/^  //' >> release.txt
           OpenWrt for HiWiFi HC5611
-          固件版本: $REVISION  内核版本: $KERNEL
+          固件版本: ${{ needs.prepare.outputs.REVISION }}  内核版本: ${{ needs.prepare.outputs.REVISION }}
           网关地址: $IPADD
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
         EOF
