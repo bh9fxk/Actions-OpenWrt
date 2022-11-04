@@ -50,25 +50,26 @@ jobs:
 
       - name: Git Clone source code
         run: |
-          df -h
           git clone $REPO_URL -b $REPO_BRANCH openwrt
     
-      - name: Show kenerl and revision
-        id: kernel
+      - name: Query kenerl and revision
         run: |
           cd openwrt
           echo "REVISION=$(grep 'DISTRIB_REVISION=' package/lean/default-settings/files/zzz-default-settings | awk -F ''\' '{print $2}')" >> $GITHUB_OUTPUT
           TESTING_KERNEL=$(grep CONFIG_TESTING_KERNEL $GITHUB_WORKSPACE/.config | awk -F= '{print $2}')
-          if [ "TESTING_KERNEL" == "y" ]; then
+          if [ "$TESTING_KERNEL" == "y" ]; then
             echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.10 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_OUTPUT
           else
             echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.4 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_OUTPUT
           fi
+          
+      - name: Show kenerl and revision
+        id: kernel
+        run: |
           cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
             #### Kernel and Revision
-            固件版本: $REVISION
-            内核版本: $KERNEL
-            网关地址：$IPADD
+            固件版本: ${{ steps.kernel.outputs.REVISION }}
+            内核版本: ${{ steps.kernel.outputs.KERNEL }}
           EOF
 
   build:
@@ -142,23 +143,6 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
         echo "IPADD=$(grep "lan)" package/base-files/files/bin/config_generate | awk -F "\"" '{print $2}')" >> $GITHUB_ENV
-        
-    - name: Show kenerl and revision information
-      run: |
-        cd openwrt
-        echo "REVISION=$(grep 'DISTRIB_REVISION=' package/lean/default-settings/files/zzz-default-settings | awk -F ''\' '{print $2}')" >> $GITHUB_ENV
-        TESTING_KERNEL=$(grep CONFIG_TESTING_KERNEL .config | awk -F= '{print $2}')
-        if [ "TESTING_KERNEL" == "y" ]; then
-          echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.10 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_ENV
-        else
-          echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.4 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_ENV
-        fi          
-        cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
-          #### Kernel and revision
-          固件版本: $REVISION
-          内核版本: $KERNEL
-          网关地址：$IPADD
-        EOF
         
     - name: Download package
       id: package
