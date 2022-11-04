@@ -116,6 +116,7 @@ jobs:
         
     - name: Show kenerl and revision information
       run: |
+        cd openwrt
         echo "REVISION=$(grep 'DISTRIB_REVISION=' package/lean/default-settings/files/zzz-default-settings | awk -F ''\' '{print $2}')" >> $GITHUB_ENV
         TESTING_KERNEL=$(grep CONFIG_TESTING_KERNEL .config | awk -F= '{print $2}')
         if [ "TESTING_KERNEL" == "y" ]; then
