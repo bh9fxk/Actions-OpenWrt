@@ -21,7 +21,7 @@ on:
         default: 'false'
         type: boolean
       firmware:
-        description: 上传固件到Artifact，默认：是
+        description: 上传到Artifact，默认：是
         required: true
         default: 'true'
         type: boolean
@@ -50,6 +50,8 @@ jobs:
 
     outputs:
       ROUTER_MODEL: ${{ steps.router.outputs.ROUTER_MODEL }}
+      REVISION: ${{ steps.kernel.outputs.REVISION }}
+      KERNEL: ${{ steps.kernel.outputs.KERNEL }}
     
     steps:
     - name: Determine router model
@@ -76,7 +78,32 @@ jobs:
           Upload Firware: $UPLOAD_FIRMWARE
           Upload Release: $UPLOAD_RELEASE
           Upload Bin: $UPLOAD_BIN_DIR
-          $(df -h /)
+        EOF
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Git Clone source code
+      run: |
+        df -h
+        git clone $REPO_URL -b $REPO_BRANCH openwrt
+
+    - name: Show kenerl and revision information
+      id: kernel
+      run: |
+        cd openwrt
+        echo "REVISION=$(grep 'DISTRIB_REVISION=' package/lean/default-settings/files/zzz-default-settings | awk -F ''\' '{print $2}')" >> $GITHUB_OUTPUT
+        TESTING_KERNEL=$(grep CONFIG_TESTING_KERNEL .config | awk -F= '{print $2}')
+        if [ "TESTING_KERNEL" == "y" ]; then
+          echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.10 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_OUTPUT
+        else
+          echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.4 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_OUTPUT
+        fi          
+        cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
+          #### Kernel and Revision
+          固件版本: $REVISION
+          内核版本: $KERNEL
+          网关地址：$IPADD
         EOF
 
   build:
@@ -118,16 +145,16 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo timedatectl set-timezone "$TZ"
-        sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
+        #sudo mkdir -p /workdir
+        #sudo chown $USER:$GROUPS /workdir
 
     - name: Clone source code
-      working-directory: /workdir
+      #working-directory: /workdir
       run: |
         df -h
         echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         git clone $REPO_URL -b $REPO_BRANCH openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        #ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: Load custom feeds
       run: |
@@ -150,23 +177,6 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
         echo "IPADD=$(grep "lan)" package/base-files/files/bin/config_generate | awk -F "\"" '{print $2}')" >> $GITHUB_ENV
-
-    - name: Show kenerl and revision information
-      run: |
-        cd openwrt
-        echo "REVISION=$(grep 'DISTRIB_REVISION=' package/lean/default-settings/files/zzz-default-settings | awk -F ''\' '{print $2}')" >> $GITHUB_ENV
-        TESTING_KERNEL=$(grep CONFIG_TESTING_KERNEL .config | awk -F= '{print $2}')
-        if [ "TESTING_KERNEL" == "y" ]; then
-          echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.10 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_ENV
-        else
-          echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.4 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_ENV
-        fi          
-        cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
-          #### Kernel and Revision
-          固件版本: $REVISION
-          内核版本: $KERNEL
-          网关地址：$IPADD
-        EOF
 
     - name: Download package
       id: package
@@ -211,10 +221,13 @@ jobs:
       run: |
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           #### Firmware Information
-          Space Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
           文件名称: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          固件版本: ${{ needs.prepare.outputs.REVISION }}
+          内核版本: ${{ needs.prepare.outputs.KERNEL }}
+          Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
+          网关地址: $IPADD
           固件目录：$FIRMWARE
-          Version Info: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
+          Space Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G          
           $(df -h /)
           Bin Files: 
           $(ls openwrt/bin/targets/*/*)
@@ -243,7 +256,7 @@ jobs:
         
         cat <<EOF | sed -E 's/^  //' >> release.txt
           OpenWrt for ${{ needs.prepare.outputs.ROUTER_MODEL }}
-          固件版本: $REVISION  内核版本: $KERNEL
+          固件版本: ${{ needs.prepare.outputs.REVISION }}  内核版本: ${{ needs.prepare.outputs.KERNEL }}
           网关地址: $IPADD
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
         EOF
