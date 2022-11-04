@@ -67,7 +67,7 @@ jobs:
       run: |
         echo $ROUTER_MODEL
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
-          ## Sources
+          #### Sources
           Time: $(date +"%Y-%m-%d %H:%M %A")
           Router Model: ${{ steps.router.outputs.ROUTER_MODEL }}
           Config File: $CONFIG_FILE
@@ -151,6 +151,23 @@ jobs:
         $GITHUB_WORKSPACE/$DIY_P2_SH
         echo "IPADD=$(grep "lan)" package/base-files/files/bin/config_generate | awk -F "\"" '{print $2}')" >> $GITHUB_ENV
 
+    - name: Show kenerl and revision information
+      run: |
+        cd openwrt
+        echo "REVISION=$(grep 'DISTRIB_REVISION=' package/lean/default-settings/files/zzz-default-settings | awk -F ''\' '{print $2}')" >> $GITHUB_ENV
+        TESTING_KERNEL=$(grep CONFIG_TESTING_KERNEL .config | awk -F= '{print $2}')
+        if [ "TESTING_KERNEL" == "y" ]; then
+          echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.10 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_ENV
+        else
+          echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.4 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_ENV
+        fi          
+        cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
+          #### Kernel and Revision
+          固件版本: $REVISION
+          内核版本: $KERNEL
+          网关地址：$IPADD
+        EOF
+
     - name: Download package
       id: package
       run: |
@@ -193,13 +210,10 @@ jobs:
     - name: Show build information
       run: |
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
-          ## Firmware Information
-          路 由 器: ${{ needs.prepare.outputs.ROUTER_MODEL }}
-          使用空间: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
-          文件时间: $FILE_DATE
-          设备名称: $DEVICE_NAME
-          固件目录: $FIRMWARE
-          IP地址：$IPADD
+          #### Firmware Information
+          Space Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
+          文件名称: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          固件目录：$FIRMWARE
           Version Info: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
           $(df -h /)
           Bin Files: 
@@ -227,9 +241,12 @@ jobs:
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")${{ env.DEVICE_NAME }}" >> $GITHUB_OUTPUT
         touch release.txt
         
-        echo "OpenWrt for ${{ needs.prepare.outputs.ROUTER_MODEL }}" >> release.txt
-        echo "IP地址: $IPADD" >> release.txt
-        echo "Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo) >> release.txt
+        cat <<EOF | sed -E 's/^  //' >> release.txt
+          OpenWrt for ${{ needs.prepare.outputs.ROUTER_MODEL }}
+          固件版本: $REVISION  内核版本: $KERNEL
+          网关地址: $IPADD
+          Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
+        EOF
         
         echo "status=success" >> $GITHUB_OUTPUT
 
