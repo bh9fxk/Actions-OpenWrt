@@ -30,7 +30,7 @@ jobs:
       - name: Show prepare information
         run: |
           cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
-            ### Sources
+            #### Sources
             Time: $(date +"%Y-%m-%d %H:%M %A")
             Router Model: HiWiFi HC5611
             Config File: $CONFIG_FILE
@@ -125,7 +125,7 @@ jobs:
           echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.4 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_ENV
         fi          
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
-          ### Kernel and revision
+          #### Kernel and revision
           固件版本: $REVISION
           内核版本: $KERNEL
           网关地址：$IPADD
@@ -175,7 +175,7 @@ jobs:
     - name: Show build information
       run: |
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
-          ### Firmware Information
+          #### Firmware Information
           Space Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
           文件名称: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           固件目录：$FIRMWARE
