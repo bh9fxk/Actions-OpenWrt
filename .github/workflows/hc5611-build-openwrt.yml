@@ -38,7 +38,7 @@ jobs:
             Time: $(date +"%Y-%m-%d %H:%M %A")
             Router Model: HiWiFi HC5611
             Config File: $CONFIG_FILE
-            Script: $DIY_P1_SH $DIY_P2_SH
+            Script Files: $DIY_P1_SH $DIY_P2_SH
             Openwrt Source: $REPO_URL
             Upload Firware: $UPLOAD_FIRMWARE
             Upload Release: $UPLOAD_RELEASE
