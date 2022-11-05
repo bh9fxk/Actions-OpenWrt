@@ -7,7 +7,7 @@ name: Build OpenWrt HC5611
 on:
   workflow_dispatch:
   schedule:
-    - cron: '2 10 * * 5'
+    - cron: '2 10 * * 2,5'
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -85,6 +85,7 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+        sudo timedatectl set-timezone "$TZ"
         docker rmi `docker images -q`
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
@@ -105,14 +106,6 @@ jobs:
       run: |  
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
-        
-    - name: 设置时区和工作目录
-      env:
-        DEBIAN_FRONTEND: noninteractive
-      run: |
-        sudo timedatectl set-timezone "$TZ"
-        sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
 
     - name: Clone source code
       working-directory: /workdir
@@ -120,7 +113,6 @@ jobs:
         df -h
         echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         git clone $REPO_URL -b $REPO_BRANCH openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: Load custom feeds
       run: |
@@ -193,10 +185,10 @@ jobs:
           固件版本: ${{ needs.prepare.outputs.REVISION }}
           内核版本: ${{ needs.prepare.outputs.KERNEL }}
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
-          网关地址: $IPADD
-          固件目录：$FIRMWARE
-          Space Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
+          网关地址: $IPADD          
           $(df -h /)
+          Space Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
+          固件目录：$FIRMWARE
           Bin Files:
           $(ls openwrt/bin/targets/*/*)
         EOF
