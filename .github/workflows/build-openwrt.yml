@@ -222,13 +222,11 @@ jobs:
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           #### Firmware Information
           文件名称: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-          固件版本: ${{ needs.prepare.outputs.REVISION }}
-          内核版本: ${{ needs.prepare.outputs.KERNEL }}
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
-          网关地址: $IPADD
-          固件目录：$FIRMWARE
-          Space Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
+          网关地址: $IPADD          
           $(df -h /)
+          Space Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
+          固件目录：$FIRMWARE
           Bin Files:
           $(ls openwrt/bin/targets/*/*)
         EOF
