@@ -108,7 +108,6 @@ jobs:
         sudo -E apt-get clean
 
     - name: Clone source code
-      working-directory: /workdir
       run: |
         df -h
         echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
