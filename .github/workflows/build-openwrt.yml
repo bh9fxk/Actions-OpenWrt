@@ -214,14 +214,13 @@ jobs:
 
     - name: Show build information
       run: |
-        df -h / > DF
+        df -h
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           #### Firmware Information
           Time: $(date +"%Y-%m-%d %H:%M %A")
           文件名称: OpenWrt${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
-          网关地址: $IPADD          
-          $(cat DF)
+          网关地址: $IPADD
           Space Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
           固件目录：$FIRMWARE
           Bin Files:
