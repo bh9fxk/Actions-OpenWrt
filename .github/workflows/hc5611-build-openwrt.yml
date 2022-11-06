@@ -180,7 +180,7 @@ jobs:
       run: |
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           #### Firmware Information
-          文件名称: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          文件名称: OpenWrt${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
           网关地址: $IPADD          
           $(df -h /)
