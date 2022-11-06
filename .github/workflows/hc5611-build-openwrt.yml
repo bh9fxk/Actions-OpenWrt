@@ -215,7 +215,7 @@ jobs:
         
         cat <<EOF | sed -E 's/^  //' >> release.txt
           OpenWrt for HiWiFi HC5611
-          固件版本: ${{ needs.prepare.outputs.REVISION }}  内核版本: ${{ needs.prepare.outputs.REVISION }}
+          固件版本: ${{ needs.prepare.outputs.REVISION }}  内核版本: ${{ needs.prepare.outputs.KERNEL }}
           网关地址: $IPADD
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
         EOF
