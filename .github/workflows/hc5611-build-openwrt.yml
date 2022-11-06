@@ -52,7 +52,7 @@ jobs:
         run: |
           git clone $REPO_URL -b $REPO_BRANCH openwrt
     
-      - name: Query kenerl and revision
+      - name: Query kernel and revision
         id: kernel
         run: |
           cd openwrt
@@ -64,7 +64,7 @@ jobs:
             echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.4 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_OUTPUT
           fi
           
-      - name: Show kenerl and revision
+      - name: Show kernel and revision
         run: |
           cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
             #### Kernel and Revision
@@ -106,7 +106,13 @@ jobs:
       run: |  
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
-
+        
+    - name: Set Timezone
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo timedatectl set-timezone "$TZ"
+        
     - name: Clone source code
       run: |
         df -h
@@ -215,7 +221,7 @@ jobs:
         
         cat <<EOF | sed -E 's/^  //' >> release.txt
           OpenWrt for HiWiFi HC5611
-          固件版本: ${{ needs.prepare.outputs.REVISION }}  内核版本: ${{ needs.prepare.outputs.KERNEL }}
+          固件版本: ${{ needs.prepare.outputs.REVISION }}   内核版本: ${{ needs.prepare.outputs.KERNEL }}
           网关地址: $IPADD
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
         EOF
