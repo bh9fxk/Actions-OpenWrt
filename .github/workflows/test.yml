@@ -15,6 +15,6 @@ jobs:
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           #### Sources
           Time: $(date +"%Y-%m-%d %H:%M %A")
-          "$(df -h /)"
-          "$(cat DF)"
+          $(df -h /)
+          $(echo "$(cat DF)")
         EOF
