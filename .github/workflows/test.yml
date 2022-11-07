@@ -16,5 +16,5 @@ jobs:
           #### Sources
           Time: $(date +"%Y-%m-%d %H:%M %A")
           $(df -h /)
-          $(echo "$DF")
+          $('echo "$DF"')
         EOF
