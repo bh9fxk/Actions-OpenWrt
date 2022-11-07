@@ -191,7 +191,8 @@ jobs:
           文件名称: OpenWrt${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
           网关地址: $IPADD
-          Space Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
+          Space Used:
+          $(df -h / | awk '{print $2}' | tr "\n" ":" | sed -e 's/:$/\n/') $(df -h / | awk '{print $3}' | tr "\n" ":" | sed -e 's/:$/\n/')  $(df -h / | awk '{print $4}' | tr "\n" ":"|sed -e 's/:$/\n/') Build Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
           固件目录：$FIRMWARE
           Bin Files:
           $(ls openwrt/bin/targets/*/*)
@@ -220,7 +221,7 @@ jobs:
         
         cat <<EOF | sed -E 's/^  //' >> release.txt
           OpenWrt for HiWiFi HC5611
-          固件版本: ${{ needs.prepare.outputs.REVISION }}   内核版本: ${{ needs.prepare.outputs.KERNEL }}
+          固件版本: ${{ needs.prepare.outputs.REVISION }} 内核版本: ${{ needs.prepare.outputs.KERNEL }}
           网关地址: $IPADD
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
         EOF
