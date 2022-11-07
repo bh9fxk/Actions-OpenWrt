@@ -1,0 +1,20 @@
+name: Build Test
+
+on:
+  workflow_dispatch
+  
+jobs:
+  prepare:
+    name: Prepare
+    runs-on: ubuntu-22.04
+    
+    steps:
+    - name: Space
+      run: |
+        df -h / > DF
+        cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
+          #### Sources
+          Time: $(date +"%Y-%m-%d %H:%M %A")
+          "$(df -h /)"
+          "$(cat DF)"
+        EOF
