@@ -11,9 +11,9 @@ jobs:
     steps:
     - name: Space
       run: |
-        DF="$(df -h /)"
+        df -h / > DF
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           #### Sources
           Time: $(date +"%Y-%m-%d %H:%M %A")
-          $(echo $DF)
+          $(cat DF)
         EOF
