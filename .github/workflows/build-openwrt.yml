@@ -218,12 +218,13 @@ jobs:
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           #### Firmware Information
           Time: $(date +"%Y-%m-%d %H:%M %A")
-          文件名称: OpenWrt${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          文件信息: OpenWrt${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
           网关地址: $IPADD
-          Space Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
+          Space Used: 
+          $(df -h / | awk '{print $2}' | tr "\n" ":" | sed -e 's/:$/\n/') $(df -h / | awk '{print $3}' | tr "\n" ":" | sed -e 's/:$/\n/')  $(df -h / | awk '{print $4}' | tr "\n" ":"|sed -e 's/:$/\n/') Build Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G 
           固件目录：$FIRMWARE
-          Bin Files:
+          固件文件:
           $(ls openwrt/bin/targets/*/*)
         EOF
         
@@ -250,7 +251,7 @@ jobs:
         
         cat <<EOF | sed -E 's/^  //' >> release.txt
           OpenWrt for ${{ needs.prepare.outputs.ROUTER_MODEL }}
-          固件版本: ${{ needs.prepare.outputs.REVISION }}  内核版本: ${{ needs.prepare.outputs.KERNEL }}
+          固件版本: ${{ needs.prepare.outputs.REVISION }} 内核版本: ${{ needs.prepare.outputs.KERNEL }}
           网关地址: $IPADD
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
         EOF
