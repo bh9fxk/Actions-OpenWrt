@@ -6,7 +6,7 @@ name: Build OpenWrt HC5611
 
 on:
   schedule:
-    - cron: '2 10 * * 2,5'
+    - cron: '2 2 * * 2,5'
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -190,8 +190,8 @@ jobs:
           文件名称: OpenWrt${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
           网关地址: $IPADD
-          Space Used:
-          $(df -h / | awk '{print $2}' | tr "\n" ":" | sed -e 's/:$/\n/') $(df -h / | awk '{print $3}' | tr "\n" ":" | sed -e 's/:$/\n/')  $(df -h / | awk '{print $4}' | tr "\n" ":"|sed -e 's/:$/\n/') Build Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
+          Build Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
+          Space: $(df -h / | awk '{print $2}' | tr "\n" ":" | sed -e 's/:$/\n/') $(df -h / | awk '{print $3}' | tr "\n" ":" | sed -e 's/:$/\n/')  $(df -h / | awk '{print $4}' | tr "\n" ":"|sed -e 's/:$/\n/')
           固件目录：$FIRMWARE
           Bin Files:
           $(ls openwrt/bin/targets/*/*)
