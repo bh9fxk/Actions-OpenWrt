@@ -24,7 +24,7 @@ jobs:
     - name: Generate release tag
       id: tag
       run: |
-        echo "release_tag=$(date +"%Y.%m.%d-%H%M") >> $GITHUB_OUTPUT
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
         cat <<EOF | sed -E 's/^  //' >> release.txt
           OpenWrt for HiWiFi HC5611
