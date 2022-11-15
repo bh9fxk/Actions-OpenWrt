@@ -33,7 +33,7 @@ jobs:
     
     - name: release
       uses: google-github-actions/release-please-action@v3
-      with: |
+      with:
         extra-files: release.txt
         path: $PWD
       
