@@ -18,3 +18,23 @@ jobs:
           Space Info:
           $(df -h / | awk '{print $2}' | tr "\n" ":" | sed -e 's/:$/\n/') $(df -h / | awk '{print $3}' | tr "\n" ":" | sed -e 's/:$/\n/')  $(df -h / | awk '{print $4}' | tr "\n" ":"|sed -e 's/:$/\n/') 
         EOF
+    - name: checkout
+      uses: actions/checkout@v3
+    
+    - name: Generate release tag
+      id: tag
+      run: |
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M") >> $GITHUB_OUTPUT
+        touch release.txt
+        cat <<EOF | sed -E 's/^  //' >> release.txt
+          OpenWrt for HiWiFi HC5611
+          $(date +"%Y.%m.%d-%H%M")
+        EOF
+    
+    - name: release
+      uses: google-github-actions/release-please-action@v3
+      with: |
+        extra-files: release.txt
+        path: $PWD
+      
+    
