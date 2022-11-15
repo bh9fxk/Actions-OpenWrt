@@ -5,6 +5,7 @@
 name: Build OpenWrt HC5611
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '2 2 * * 2,5'
 
@@ -115,7 +116,7 @@ jobs:
     - name: Clone source code
       run: |
         df -h
-        echo "SPACE_A=$(df -h / | awk '/\// {print $4} | sed s/G//g)" >> $GITHUB_ENV
+        echo "SPACE_A=$(df -h / | awk '/\// {print $4}' | sed s/G//g)" >> $GITHUB_ENV
         git clone $REPO_URL -b $REPO_BRANCH openwrt
 
     - name: Load custom feeds
