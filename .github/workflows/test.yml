@@ -30,11 +30,5 @@ jobs:
           OpenWrt for HiWiFi HC5611
           $(date +"%Y.%m.%d-%H%M")
         EOF
-    
-    - name: release
-      uses: google-github-actions/release-please-action@v3
-      with:
-        extra-files: release.txt
-        path: $PWD
       
     
