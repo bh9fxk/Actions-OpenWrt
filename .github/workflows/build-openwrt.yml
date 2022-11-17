@@ -188,7 +188,8 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 V=s
+        #make -j$(nproc) || make -j1 V=s
+        make -j$(nproc) V=s
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
@@ -215,13 +216,15 @@ jobs:
     - name: Show build information
       run: |
         df -h
+        SPACE_USED=$SPACE_A-$SPACE_B
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           #### Firmware Information
           Time: $(date +"%Y-%m-%d %H:%M %A")
           文件信息: OpenWrt${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
           网关地址: $IPADD
-          Build Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G 
+          #Build Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G 
+          Build Used: $(echo "scale=2;$SPACE_USED/1024000" | bc)G 
           Space: $(df -h / | awk '{print $2}' | tr "\n" ":" | sed -e 's/:$/\n/') $(df -h / | awk '{print $3}' | tr "\n" ":" | sed -e 's/:$/\n/')  $(df -h / | awk '{print $4}' | tr "\n" ":"|sed -e 's/:$/\n/')
           固件目录：$FIRMWARE
           固件文件:
