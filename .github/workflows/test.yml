@@ -26,8 +26,9 @@ jobs:
         df -h
         echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
     
-    - name: Check space usage
+    - name: Space B
       run: |
+        sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
         echo "SPACE_B=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
    
     - name: Show information
