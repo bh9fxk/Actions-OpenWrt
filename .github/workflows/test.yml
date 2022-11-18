@@ -9,6 +9,12 @@ jobs:
     runs-on: ubuntu-22.04
     
     steps:
+    - name: Set Timezone
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo timedatectl set-timezone Asia/Shanghai
+        
     - name: Space
       run: |
         df -h /
