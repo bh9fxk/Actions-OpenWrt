@@ -216,14 +216,12 @@ jobs:
     - name: Show build information
       run: |
         df -h
-        SPACE_USED=$SPACE_A-$SPACE_B
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           #### Firmware Information
           Time: $(date +"%Y-%m-%d %H:%M %A")
           文件信息: OpenWrt${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
           网关地址: $IPADD
-          #Build Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
           Build Used: $(echo "scale=2;($SPACE_A-$SPACE_B)/1024000" | bc)G
           Space: $(df -h / | awk '{print $2}' | tr "\n" ":" | sed -e 's/:$/\n/') $(df -h / | awk '{print $3}' | tr "\n" ":" | sed -e 's/:$/\n/')  $(df -h / | awk '{print $4}' | tr "\n" ":"|sed -e 's/:$/\n/')
           固件目录：$FIRMWARE
