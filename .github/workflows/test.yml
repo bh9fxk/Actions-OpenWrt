@@ -19,16 +19,24 @@ jobs:
           $(df -h / | awk '{print $2}' | tr "\n" ":" | sed -e 's/:$/\n/') $(df -h / | awk '{print $3}' | tr "\n" ":" | sed -e 's/:$/\n/')  $(df -h / | awk '{print $4}' | tr "\n" ":"|sed -e 's/:$/\n/') 
         EOF
     - name: checkout
-      uses: actions/checkout@v3
-    
-    - name: Generate release tag
-      id: tag
-      run: |
-        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
-        touch release.txt
-        cat <<EOF | sed -E 's/^  //' >> release.txt
-          OpenWrt for HiWiFi HC5611
-          $(date +"%Y.%m.%d-%H%M")
-        EOF
+      uses: actions/checkout@v3       
       
+    - name: Space A
+      run: |
+        df -h
+        echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
     
+    - name: Check space usage
+      run: |
+        echo "SPACE_B=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
+   
+    - name: Show information
+      run: |
+        df -h
+        cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
+          #### Firmware Information
+          Time: $(date +"%Y-%m-%d %H:%M %A")
+          #Build Used: $(echo $[($SPACE_A-$SPACE_B) / 1024000])G
+          Build Used: $(echo "scale=2;($SPACE_A-$SPACE_B)/1024000" | bc)G
+          Space: $(df -h / | awk '{print $2}' | tr "\n" ":" | sed -e 's/:$/\n/') $(df -h / | awk '{print $3}' | tr "\n" ":" | sed -e 's/:$/\n/')  $(df -h / | awk '{print $4}' | tr "\n" ":"|sed -e 's/:$/\n/')
+        EOF
