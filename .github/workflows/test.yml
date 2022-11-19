@@ -22,7 +22,7 @@ jobs:
           #### Sources
           Time: $(date +"%Y-%m-%d %H:%M %A")
           Space Info:
-          $(df -h / | awk '{print $2}' | tr "\n" ":" | sed -e 's/:$/\n/') $(df -h / | awk '{print $3}' | tr "\n" ":" | sed -e 's/:$/\n/')  $(df -h / | awk '{print $4}' | tr "\n" ":"|sed -e 's/:$/\n/') 
+          $(echo -e "$(df -h /)") 
         EOF
     - name: checkout
       uses: actions/checkout@v3       
