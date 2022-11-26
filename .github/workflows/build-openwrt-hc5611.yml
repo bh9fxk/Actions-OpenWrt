@@ -250,15 +250,11 @@ jobs:
         retain_days: 1
         keep_minimum_runs: 2
 
-    - uses: sgpublic/delete-release-action@main
+    - name: Delete old Releases
+      uses: bh9fxk/delete-older-releases@v0.2.1
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        # repo: '<owner>/<repoName>' # you can input a another repo here, defaults to current repo
-        release-drop: true
-        release-keep-count: 6
-        release-drop-tag: true
-        pre-release-drop: true
-        pre-release-keep-count: -1
-        pre-release-drop-tag: true
-        draft-drop: true
+        keep_latest: 6
+        delete_tags: true
       env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
