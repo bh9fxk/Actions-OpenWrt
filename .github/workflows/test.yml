@@ -47,3 +47,12 @@ jobs:
           Build Used: $(echo "scale=2;($SPACE_A-$SPACE_B)/1024000" | bc)G
           Space: $(df -h / | awk '{print $2}' | tr "\n" ":" | sed -e 's/:$/\n/') $(df -h / | awk '{print $3}' | tr "\n" ":" | sed -e 's/:$/\n/')  $(df -h / | awk '{print $4}' | tr "\n" ":"|sed -e 's/:$/\n/')
         EOF
+        
+    - name: Delete old Releases
+      uses: bh9fxk/delete-older-releases@main
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      with:
+        keep_latest: 6
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
