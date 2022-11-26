@@ -49,7 +49,7 @@ jobs:
         EOF
         
     - name: Delete old Releases
-      uses: bh9fxk/delete-older-releases@main
+      uses: bh9fxk/delete-older-releases@v0.2.1
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
         keep_latest: 6
