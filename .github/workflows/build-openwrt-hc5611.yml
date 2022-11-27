@@ -116,7 +116,7 @@ jobs:
     - name: Clone source code
       run: |
         df -h
-        echo "SPACE_A=$(df -h / | awk '/\// {print $4}' | sed s/G//g)" >> $GITHUB_ENV
+        echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         git clone $REPO_URL -b $REPO_BRANCH openwrt
 
     - name: Load custom feeds
@@ -166,7 +166,7 @@ jobs:
       run: |
         cd openwrt
         df -h
-        echo "SPACE_B=$(df -h / | awk '/\// {print $4}' | sed s/G//g)" >> $GITHUB_ENV
+        echo "SPACE_B=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         echo "-----------OpenWrt编译目录----------"
         du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
         du -h --max-depth=1 ./build_dir
