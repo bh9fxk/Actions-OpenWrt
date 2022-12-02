@@ -222,7 +222,7 @@ jobs:
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
           网关地址: $IPADD
           Build Used: $(echo "scale=2;($SPACE_A-$SPACE_B)/1024000" | bc)G
-          Space: $(df -h / | awk '{print $2}' | tr "\n" ":" | sed -e 's/:$/\n/') $(df -h / | awk '{print $3}' | tr "\n" ":" | sed -e 's/:$/\n/')  $(df -h / | awk '{print $4}' | tr "\n" ":"|sed -e 's/:$/\n/')
+          $(df -h / | awk '{print $2}' | tr "\n" ":" | sed -e 's/:$/\n/') $(df -h / | awk '{print $3}' | tr "\n" ":" | sed -e 's/:$/\n/')  $(df -h / | awk '{print $4}' | tr "\n" ":"|sed -e 's/:$/\n/')
           固件目录：$FIRMWARE
           固件文件:
           $(ls openwrt/bin/targets/*/*)
