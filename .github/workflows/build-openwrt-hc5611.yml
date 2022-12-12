@@ -47,21 +47,20 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Git Clone source code
-        run: |
-          git clone $REPO_URL -b $REPO_BRANCH openwrt
     
       - name: Query kernel and revision
         id: kernel
         run: |
-          cd openwrt
-          echo "REVISION=$(grep 'DISTRIB_REVISION=' package/lean/default-settings/files/zzz-default-settings | awk -F \' '{print $2}')" >> $GITHUB_OUTPUT
-          TESTING_KERNEL=$(grep CONFIG_TESTING_KERNEL $GITHUB_WORKSPACE/hc5611.config | awk -F= '{print $2}')
+          URL_10=https://raw.githubusercontent.com/coolsnowwolf/lede/master/include/kernel-5.10
+          URL_4=https://raw.githubusercontent.com/coolsnowwolf/lede/master/include/kernel-5.4
+          URL_REV=https://raw.githubusercontent.com/coolsnowwolf/lede/master/package/lean/default-settings/files/zzz-default-settings
+        
+          echo "REVISION=$(curl URL_REV | awk -F \' '/DISTRIB_REVISION=/ {print $2}')" >> $GITHUB_OUTPUT
+          TESTING_KERNEL=$(awk -F= '/CONFIG_TESTING_KERNEL/ {print $2}' $GITHUB_WORKSPACE/$CONFIG_FILE)
           if [ "$TESTING_KERNEL" == "y" ]; then
-            echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.10 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_OUTPUT
+            echo "KERNEL=$(curl URL_10 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
           else
-            echo "KERNEL=$(grep LINUX_KERNEL_HASH include/kernel-5.4 | awk -F '[-,=]' '{print $2}')" >> $GITHUB_OUTPUT
+            echo "KERNEL=$(curl URL_4 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
           fi
           
       - name: Show kernel and revision
