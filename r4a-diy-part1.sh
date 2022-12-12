@@ -9,10 +9,10 @@
 #
 
 # Uncomment a feed source
-#sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
+sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
 
 # Add a feed source
-echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
+#echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
 #wget 'https://github.com/BH9FXK/Actions-OpenWrt/raw/main/r4a.tar.gz' --no-check-certificate && tar -xzvf r4a.tar.gz && rm -f r4a.tar.gz
 tar -xzvf $GITHUB_WORKSPACE/r4a.tar.gz
