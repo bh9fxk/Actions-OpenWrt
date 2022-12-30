@@ -6,8 +6,8 @@ name: Build OpenWrt HC5611
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '31 07 * * 5'
+  #schedule:
+  #  - cron: '31 07 * * 5'
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
