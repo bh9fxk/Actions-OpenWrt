@@ -96,8 +96,8 @@ jobs:
         sudo -E apt-get update
         echo "---------install依赖包-------------"
         sudo -E apt-get -y install $(cat $GITHUB_WORKSPACE/depends-ubuntu)
-        echo "---------dist-upgrade--------------"
-        sudo -E apt-get -y dist-upgrade
+        #echo "---------dist-upgrade--------------"
+        #sudo -E apt-get -y dist-upgrade
         
     - name: 清理空间
       env:
