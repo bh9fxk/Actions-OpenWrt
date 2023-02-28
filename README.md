@@ -8,7 +8,6 @@
 - n2n
 - helloworld
 - pushbot wrtbwom
-- ramfree
 - zerotier one
 
 ---
