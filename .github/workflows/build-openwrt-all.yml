@@ -1,20 +1,9 @@
 #
-# Description: Build OpenWrt using GitHub Actions
-#
-name: Build OpenWrt
+name: Build All OpenWrt 
 
 on:
   workflow_dispatch:
     inputs:
-      model:
-        description: 选择路由器型号
-        required: true
-        default: 'r4a'
-        type: choice
-        options:
-        - r4a
-        - r3
-        - hc5611
       bin:
         description: 上传固件BIN文件，默认：否
         required: true
@@ -35,9 +24,9 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   #FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: ${{ inputs.model }}.config
-  DIY_P1_SH: ${{ inputs.model }}-diy-part1.sh
-  DIY_P2_SH: ${{ inputs.model }}-diy-part2.sh
+  #CONFIG_FILE: ${{ inputs.model }}.config
+  #DIY_P1_SH: ${{ inputs.model }}-diy-part1.sh
+  #DIY_P2_SH: ${{ inputs.model }}-diy-part2.sh
   UPLOAD_BIN_DIR: ${{ inputs.bin }}
   UPLOAD_FIRMWARE: ${{ inputs.firmware }}
   UPLOAD_RELEASE: ${{ inputs.release }}
@@ -45,34 +34,20 @@ env:
   
 jobs:
   prepare:
-    name: Prepare ${{ inputs.model }}
+    name: Prepare
     runs-on: ubuntu-22.04
 
     outputs:
-      ROUTER_MODEL: ${{ steps.router.outputs.ROUTER_MODEL }}
+      #ROUTER_MODEL: ${{ steps.router.outputs.ROUTER_MODEL }}
       REVISION: ${{ steps.kernel.outputs.REVISION }}
       KERNEL: ${{ steps.kernel.outputs.KERNEL }}
     
     steps:
-    - name: Determine router model
-      id: router
-      run: |
-        if [ "${{ inputs.model }}" == "r4a" ]; then
-        echo "ROUTER_MODEL=Xiaomi Mi Router 4A Gigabit Edition" >> $GITHUB_OUTPUT
-        elif [ "${{ inputs.model }}" == "r3" ]; then
-        echo "ROUTER_MODEL=Xiaomi Mi Router 3" >> $GITHUB_OUTPUT
-        else
-        echo "ROUTER_MODEL=HiWiFi HC5611" >> $GITHUB_OUTPUT
-        fi
-
     - name: Show prepare information
       run: |
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           #### Sources
           Time: $(date +"%Y-%m-%d %H:%M %A")
-          Router Model: ${{ steps.router.outputs.ROUTER_MODEL }}
-          Config File: $CONFIG_FILE
-          Script Files: $DIY_P1_SH $DIY_P2_SH
           Openwrt Source: $REPO_URL
           Upload Firware: $UPLOAD_FIRMWARE
           Upload Release: $UPLOAD_RELEASE
@@ -85,17 +60,11 @@ jobs:
     - name: Query kernel and revision
       id: kernel
       run: |
-          URL_10=https://raw.githubusercontent.com/coolsnowwolf/lede/master/include/kernel-5.10
           URL_4=https://raw.githubusercontent.com/coolsnowwolf/lede/master/include/kernel-5.4
           URL_REV=https://raw.githubusercontent.com/coolsnowwolf/lede/master/package/lean/default-settings/files/zzz-default-settings
         
           echo "REVISION=$(curl $URL_REV | awk -F \' '/DISTRIB_REVISION=/ {print $2}')" >> $GITHUB_OUTPUT
-          TESTING_KERNEL=$(awk -F= '/CONFIG_TESTING_KERNEL/ {print $2}' $GITHUB_WORKSPACE/$CONFIG_FILE)
-          if [ "$TESTING_KERNEL" == "y" ]; then
-            echo "KERNEL=$(curl $URL_10 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
-          else
-            echo "KERNEL=$(curl $URL_4 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
-          fi
+          echo "KERNEL=$(curl $URL_4 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
     
     - name: Show kernel and revision
       run: |
@@ -106,9 +75,16 @@ jobs:
         EOF
 
   build:
-    name: Build ${{ needs.prepare.outputs.ROUTER_MODEL }}
+    name: Build ${{ matrix.MODEL }}
     needs: prepare
     runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        MODEL:
+          - hc5611
+          - r3
+          - r4a
     
     steps:
     - name: Checkout
@@ -153,10 +129,9 @@ jobs:
 
     - name: Load custom feeds
       run: |
-        #[ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-        chmod +x $DIY_P1_SH
+        chmod +x ${{ matrix.MODEL }}_P1_SH
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P1_SH
+        $GITHUB_WORKSPACE/${{ matrix.MODEL }}_P1_SH
 
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
@@ -166,11 +141,10 @@ jobs:
 
     - name: Load custom configuration
       run: |
-        #[ -e files ] && mv files openwrt/files
-        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-        chmod +x $DIY_P2_SH
+        [ -e ${{ matrix.MODEL }}.conf ] && mv ${{ matrix.MODEL }}.conf openwrt/.config
+        chmod +x ${{ matrix.MODEL }}_P2_SH
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P2_SH
+        $GITHUB_WORKSPACE/${{ matrix.MODEL }}_P2_SH
         echo "IPADD=$(grep "lan)" package/base-files/files/bin/config_generate | awk -F "\"" '{print $2}')" >> $GITHUB_ENV
 
     - name: Download packages
@@ -249,7 +223,6 @@ jobs:
         touch release.txt
         
         cat <<EOF | sed -E 's/^  //' >> release.txt
-          OpenWrt for ${{ needs.prepare.outputs.ROUTER_MODEL }}
           固件版本: ${{ needs.prepare.outputs.REVISION }} 内核版本: ${{ needs.prepare.outputs.KERNEL }}
           网关地址: $IPADD
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
