@@ -12,7 +12,7 @@ on:
       firmware:
         description: 上传到Artifact，默认：是
         required: true
-        default: 'true'
+        default: 'false'
         type: boolean
       release:
         description: 是否发布固件，默认：是
@@ -108,7 +108,7 @@ jobs:
         #echo "---------dist-upgrade--------------"
         #sudo -E apt-get -y dist-upgrade
 
-    - name: Apt Clean space
+    - name: Apt clean space
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
@@ -141,7 +141,7 @@ jobs:
 
     - name: Load custom configuration
       run: |
-        [ -e ${{ matrix.MODEL }}.conf ] && mv ${{ matrix.MODEL }}.conf openwrt/.config
+        [ -e ${{ matrix.MODEL }}.config ] && mv ${{ matrix.MODEL }}.config openwrt/.config
         chmod +x ${{ matrix.MODEL }}-diy-part2.sh
         cd openwrt
         $GITHUB_WORKSPACE/${{ matrix.MODEL }}-diy-part2.sh
