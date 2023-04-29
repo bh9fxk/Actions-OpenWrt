@@ -129,9 +129,9 @@ jobs:
 
     - name: Load custom feeds
       run: |
-        chmod +x ${{ matrix.MODEL }}_P1_SH
+        chmod +x ${{ matrix.MODEL }}-diy-part1.sh
         cd openwrt
-        $GITHUB_WORKSPACE/${{ matrix.MODEL }}_P1_SH
+        $GITHUB_WORKSPACE/${{ matrix.MODEL }}-diy-part1.sh
 
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
@@ -142,9 +142,9 @@ jobs:
     - name: Load custom configuration
       run: |
         [ -e ${{ matrix.MODEL }}.conf ] && mv ${{ matrix.MODEL }}.conf openwrt/.config
-        chmod +x ${{ matrix.MODEL }}_P2_SH
+        chmod +x ${{ matrix.MODEL }}-diy-part2.sh
         cd openwrt
-        $GITHUB_WORKSPACE/${{ matrix.MODEL }}_P2_SH
+        $GITHUB_WORKSPACE/${{ matrix.MODEL }}-diy-part2.sh
         echo "IPADD=$(grep "lan)" package/base-files/files/bin/config_generate | awk -F "\"" '{print $2}')" >> $GITHUB_ENV
 
     - name: Download packages
@@ -173,7 +173,7 @@ jobs:
         cd openwrt
         echo "SPACE_B=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
-        du -h --max-depth=1 ./build_dir
+        #du -h --max-depth=1 ./build_dir
         du -h --max-depth=1 ./bin
 
     - name: Organize files
