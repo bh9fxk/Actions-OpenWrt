@@ -166,10 +166,6 @@ jobs:
         cd openwrt
         df -h
         echo "SPACE_B=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
-        echo "-----------OpenWrt编译目录----------"
-        du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
-        du -h --max-depth=1 ./build_dir
-        du -h --max-depth=1 ./bin
 
     - name: Organize files
       id: organize
