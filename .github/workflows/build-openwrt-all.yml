@@ -40,7 +40,7 @@ jobs:
     outputs:
       #ROUTER_MODEL: ${{ steps.router.outputs.ROUTER_MODEL }}
       REVISION: ${{ steps.kernel.outputs.REVISION }}
-      KERNEL: ${{ steps.kernel.outputs.KERNEL54 }} / ${{ needs.prepare.outputs.KERNEL510 }}
+      KERNEL: ${{ needs.prepare.outputs.KERNEL }}
     
     steps:
     - name: Show prepare information
@@ -65,14 +65,14 @@ jobs:
           URL_REV=https://raw.githubusercontent.com/coolsnowwolf/lede/master/package/lean/default-settings/files/zzz-default-settings
         
           echo "REVISION=$(curl $URL_REV | awk -F \' '/DISTRIB_REVISION=/ {print $2}')" >> $GITHUB_OUTPUT
-          echo "KERNEL54=$(curl $URL_4 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
-          echo "KERNEL510=$(curl $URL_10 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
+          #echo "KERNEL54=$(curl $URL_4 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
+          echo "KERNEL=$(curl $URL_10 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
     - name: Show kernel and revision
       run: |
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           #### Kernel and Revision
           固件版本: ${{ steps.kernel.outputs.REVISION }}
-          内核版本: ${{ steps.kernel.outputs.KERNEL54 }} / ${{ steps.kernel.outputs.KERNEL510 }}
+          内核版本: ${{ steps.kernel.outputs.KERNEL }}
         EOF
 
   build:
@@ -225,7 +225,7 @@ jobs:
         
         cat <<EOF | sed -E 's/^  //' >> release.txt
           固件版本: ${{ needs.prepare.outputs.REVISION }} 
-          内核版本: ${{ needs.prepare.outputs.KERNEL54 }} / ${{ needs.prepare.outputs.KERNEL510 }}
+          内核版本: ${{ needs.prepare.outputs.KERNEL }}
           网关地址: $IPADD
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
         EOF
