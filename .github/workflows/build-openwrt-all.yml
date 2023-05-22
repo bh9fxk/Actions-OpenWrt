@@ -40,7 +40,7 @@ jobs:
     outputs:
       #ROUTER_MODEL: ${{ steps.router.outputs.ROUTER_MODEL }}
       REVISION: ${{ steps.kernel.outputs.REVISION }}
-      KERNEL: ${{ needs.prepare.outputs.KERNEL }}
+      KERNEL: ${{ steps.kernel.outputs.KERNEL }}
     
     steps:
     - name: Show prepare information
