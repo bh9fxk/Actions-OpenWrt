@@ -138,7 +138,7 @@ jobs:
 
     - name: Load custom configuration
       run: |
-        [ -e ${{ matrix.MODEL }}-5_4.config ] && mv ${{ matrix.MODEL }}.config openwrt/.config
+        [ -e ${{ matrix.MODEL }}-5_4.config ] && mv ${{ matrix.MODEL }}-5_4.config openwrt/.config
         chmod +x ${{ matrix.MODEL }}-diy-part2.sh
         cd openwrt
         $GITHUB_WORKSPACE/${{ matrix.MODEL }}-diy-part2.sh
