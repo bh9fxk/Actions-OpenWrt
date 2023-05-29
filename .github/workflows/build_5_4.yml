@@ -75,7 +75,7 @@ jobs:
           #### Kernel and Revision
           固件版本: ${{ steps.kernel.outputs.REVISION }}
           内核版本: ${{ steps.kernel.outputs.KERNEL54 }} / ${{ steps.kernel.outputs.KERNEL510 }}
-          EOF
+        EOF
 
   build:
     name: Build ${{ matrix.MODEL }}
