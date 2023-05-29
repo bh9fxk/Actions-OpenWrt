@@ -7,17 +7,17 @@ on:
       bin:
         description: 上传固件BIN文件，默认：否
         required: true
-        default: 'false'
+        default: false
         type: boolean
       firmware:
         description: 上传到Artifact，默认：是
         required: true
-        default: 'true'
+        default: true
         type: boolean
       release:
         description: 是否发布固件，默认：是
         required: true
-        default: 'true'
+        default: true
         type: boolean
         
 env:
