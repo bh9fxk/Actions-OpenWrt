@@ -23,6 +23,7 @@ on:
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
+  COMMIT_ID: d11884d
   #FEEDS_CONF: feeds.conf.default
   #CONFIG_FILE: ${{ inputs.model }}.config
   #DIY_P1_SH: ${{ inputs.model }}-diy-part1.sh
@@ -128,7 +129,8 @@ jobs:
         df -h
         echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         git clone $REPO_URL -b $REPO_BRANCH openwrt
-
+        git checkout -b  $REPO_BRANCH $COMMIT_ID
+        
     - name: Load custom feeds
       run: |
         chmod +x ${{ matrix.MODEL }}-diy-part1.sh
@@ -221,7 +223,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.organize.outputs.status == 'success'
       run: |
-        echo "release_tag=$(date +"%Y.%m.%d-%H%M")${{ env.DEVICE_NAME }}" >> $GITHUB_OUTPUT
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")${{ env.DEVICE_NAME }}-5.4" >> $GITHUB_OUTPUT
         touch release.txt
         
         cat <<EOF | sed -E 's/^  //' >> release.txt
