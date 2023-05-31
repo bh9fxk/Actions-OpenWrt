@@ -24,10 +24,6 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   COMMIT_ID: 4f7eb15359db6d4bcc1fccbecd907fd06d01ffb6
-  #FEEDS_CONF: feeds.conf.default
-  #CONFIG_FILE: ${{ inputs.model }}.config
-  #DIY_P1_SH: ${{ inputs.model }}-diy-part1.sh
-  #DIY_P2_SH: ${{ inputs.model }}-diy-part2.sh
   UPLOAD_BIN_DIR: ${{ inputs.bin }}
   UPLOAD_FIRMWARE: ${{ inputs.firmware }}
   UPLOAD_RELEASE: ${{ inputs.release }}
@@ -38,11 +34,10 @@ jobs:
     name: Prepare
     runs-on: ubuntu-22.04
 
-    outputs:
-      #ROUTER_MODEL: ${{ steps.router.outputs.ROUTER_MODEL }}
-      REVISION: ${{ steps.kernel.outputs.REVISION }}
-      KERNEL54: ${{ steps.kernel.outputs.KERNEL54 }}
-      KERNEL510: ${{ steps.kernel.outputs.KERNEL510 }}
+    #outputs:
+      #REVISION: ${{ steps.kernel.outputs.REVISION }}
+      #KERNEL54: ${{ steps.kernel.outputs.KERNEL54 }}
+      #KERNEL510: ${{ steps.kernel.outputs.KERNEL510 }}
     
     steps:
     - name: Show prepare information
@@ -69,10 +64,11 @@ jobs:
           echo "REVISION=$(curl $URL_REV | awk -F \' '/DISTRIB_REVISION=/ {print $2}')" >> $GITHUB_OUTPUT
           echo "KERNEL54=$(curl $URL_4 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
           echo "KERNEL510=$(curl $URL_10 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
+    
     - name: Show kernel and revision
       run: |
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
-          #### Kernel and Revision
+          #### Source Kernel and Revision
           固件版本: ${{ steps.kernel.outputs.REVISION }}
           内核版本: ${{ steps.kernel.outputs.KERNEL54 }} / ${{ steps.kernel.outputs.KERNEL510 }}
         EOF
@@ -88,7 +84,12 @@ jobs:
           - hc5611
           - r3
           - r4a
-    
+          
+    outputs:
+      REVISION: ${{ steps.kernel.outputs.REVISION }}
+      KERNEL54: ${{ steps.kernel.outputs.KERNEL54 }}
+      #KERNEL510: ${{ steps.kernel.outputs.KERNEL510 }}
+      
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -98,10 +99,8 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo -E apt-get update
-        echo "---------install依赖包-------------"
+        echo "---------安装依赖包-------------"
         sudo -E apt-get -y install $(cat $GITHUB_WORKSPACE/depends-ubuntu)
-        #echo "---------dist-upgrade--------------"
-        #sudo -E apt-get -y dist-upgrade
 
     - name: Apt clean space
       env:
@@ -152,13 +151,21 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+        
+    - name: Enquiries kernel and revision
+      id: kernel
+      run: |
+        cd openwrt
+        echo "KERNEL54=$(awk -F \' '/DISTRIB_REVISION=/ {print $2}')" include/kernel-5.4")" >> $GITHUB_OUTPUT
+        echo "REVISION=$(awk -F \' '/DISTRIB_REVISION=/ {print $2}' package/lean/default-settings/files/zzz-default-settings)" >> $GITHUB_OUTPUT  
 
     - name: Compile the firmware
       id: compile
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 || make -j1 V=s
+        #make -j$(nproc) || make -j1 || make -j1 V=s
+        make -j3
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
@@ -218,8 +225,8 @@ jobs:
         touch release.txt
         
         cat <<EOF | sed -E 's/^  //' >> release.txt
-          固件版本: ${{ needs.prepare.outputs.REVISION }} 
-          内核版本: ${{ needs.prepare.outputs.KERNEL54 }} / ${{ needs.prepare.outputs.KERNEL510 }}
+          编译固件版本: ${{ needs.build.outputs.REVISION }} 
+          编译内核版本: ${{ needs.build.outputs.KERNEL54 }}
           网关地址: $IPADD
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
         EOF
