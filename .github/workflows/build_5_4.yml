@@ -68,6 +68,42 @@ jobs:
           内核版本: ${{ steps.kernel.outputs.KERNEL54 }} / ${{ steps.kernel.outputs.KERNEL510 }}
         EOF
 
+  pre-build:
+    name: pre-build
+    needs: prepare
+    runs-on: ubuntu-laste
+    
+    outputs:
+      REVISION: ${{ steps.kernel.outputs.REVISION }}
+      KERNEL54: ${{ steps.kernel.outputs.KERNEL54 }}
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      
+    - name: Clone source code
+      run: |
+        df -h
+        echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
+        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        cd openwrt
+        git checkout $COMMIT_ID
+    
+    - name: Enquiries kernel and revision
+      id: kernel
+      run: |
+        cd openwrt
+        echo "KERNEL54=$(awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}' include/kernel-5.4)" >> $GITHUB_OUTPUT
+        echo "REVISION=$(awk -F \' '/DISTRIB_REVISION=/ {print $2}' package/lean/default-settings/files/zzz-default-settings)" >> $GITHUB_OUTPUT  
+    
+    - name: Build kernel and revision
+      run: |
+        cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
+          #### Build Kernel and Revision
+          编译固件版本: ${{ steps.kernel.outputs.REVISION }}
+          编译内核版本: ${{ steps.kernel.outputs.KERNEL54 }}
+        EOF    
+  
   build:
     name: Build ${{ matrix.MODEL }}-5_4
     needs: prepare
@@ -80,11 +116,6 @@ jobs:
           - r3
           - r4a
           
-    outputs:
-      REVISION: ${{ steps.kernel.outputs.REVISION }}
-      KERNEL54: ${{ steps.kernel.outputs.KERNEL54 }}
-      #KERNEL510: ${{ steps.kernel.outputs.KERNEL510 }}
-      
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -146,21 +177,6 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-        
-    - name: Enquiries kernel and revision
-      id: kernel
-      run: |
-        cd openwrt
-        echo "KERNEL54=$(awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}' include/kernel-5.4)" >> $GITHUB_OUTPUT
-        echo "REVISION=$(awk -F \' '/DISTRIB_REVISION=/ {print $2}' package/lean/default-settings/files/zzz-default-settings)" >> $GITHUB_OUTPUT  
-    
-    - name: Show kernel and revision
-      run: |
-        cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
-          #### Build Kernel and Revision
-          编译固件版本: ${{ steps.kernel.outputs.REVISION }}
-          编译内核版本: ${{ steps.kernel.outputs.KERNEL54 }}
-        EOF
 
     - name: Compile the firmware
       id: compile
@@ -227,8 +243,8 @@ jobs:
         touch release.txt
         
         cat <<EOF | sed -E 's/^  //' >> release.txt
-          编译固件版本: ${{ needs.build.outputs.REVISION }} 
-          编译内核版本: ${{ needs.build.outputs.KERNEL54 }}
+          编译固件版本: ${{ needs.pre-build.outputs.REVISION }} 
+          编译内核版本: ${{ needs.pre-build.outputs.KERNEL54 }}
           网关地址: $IPADD
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
         EOF
@@ -257,7 +273,7 @@ jobs:
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2
       with:
-        retain_days: 1
+        retain_days: 0
         keep_minimum_runs: 2
 
     - name: Delete old Releases
