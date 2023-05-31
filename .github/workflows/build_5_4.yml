@@ -156,8 +156,16 @@ jobs:
       id: kernel
       run: |
         cd openwrt
-        echo "KERNEL54=$(awk -F \' '/DISTRIB_REVISION=/ {print $2}')" include/kernel-5.4")" >> $GITHUB_OUTPUT
+        echo "KERNEL54=$(awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}' include/kernel-5.4")" >> $GITHUB_OUTPUT
         echo "REVISION=$(awk -F \' '/DISTRIB_REVISION=/ {print $2}' package/lean/default-settings/files/zzz-default-settings)" >> $GITHUB_OUTPUT  
+    
+    - name: Show kernel and revision
+      run: |
+        cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
+          #### Source Kernel and Revision
+          编译固件版本: ${{ steps.kernel.outputs.REVISION }}
+          编译内核版本: ${{ steps.kernel.outputs.KERNEL54 }}
+        EOF
 
     - name: Compile the firmware
       id: compile
