@@ -69,9 +69,9 @@ jobs:
         EOF
 
   pre-build:
-    name: pre-build
+    name: Pre-Build
     needs: prepare
-    runs-on: ubuntu-laste
+    runs-on: ubuntu-latest
     
     outputs:
       REVISION: ${{ steps.kernel.outputs.REVISION }}
