@@ -133,7 +133,7 @@ jobs:
   
   build:
     name: Build ${{ matrix.MODEL }}-5_4
-    needs: [ prepare, pre-build ]
+    needs: prepare
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
@@ -290,7 +290,7 @@ jobs:
 
   delete:
     name: Delete old workflow
-    needs: [ prepare, pre-build, build ]
+    needs: [ prepare, build ]
     runs-on: ubuntu-22.04
     
     steps:
