@@ -33,11 +33,6 @@ jobs:
   prepare:
     name: Prepare
     runs-on: ubuntu-22.04
-
-    #outputs:
-      #REVISION: ${{ steps.kernel.outputs.REVISION }}
-      #KERNEL54: ${{ steps.kernel.outputs.KERNEL54 }}
-      #KERNEL510: ${{ steps.kernel.outputs.KERNEL510 }}
     
     steps:
     - name: Show prepare information
@@ -120,8 +115,8 @@ jobs:
         df -h
         echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         git clone $REPO_URL -b $REPO_BRANCH openwrt
-        #cd openwrt
-        #git checkout $COMMIT_ID
+        cd openwrt
+        git checkout $COMMIT_ID
         
     - name: Load custom feeds
       run: |
@@ -162,7 +157,7 @@ jobs:
     - name: Show kernel and revision
       run: |
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
-          #### Source Kernel and Revision
+          #### Build Kernel and Revision
           编译固件版本: ${{ steps.kernel.outputs.REVISION }}
           编译内核版本: ${{ steps.kernel.outputs.KERNEL54 }}
         EOF
