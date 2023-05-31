@@ -102,7 +102,7 @@ jobs:
           #### Build Kernel and Revision
           编译固件版本: ${{ steps.kernel.outputs.REVISION }}
           编译内核版本: ${{ steps.kernel.outputs.KERNEL54 }}
-        EOF    
+        EOF
   
   build:
     name: Build ${{ matrix.MODEL }}-5_4
