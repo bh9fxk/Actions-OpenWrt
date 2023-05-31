@@ -93,7 +93,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: 安装依赖
+    - name: Install dependencies
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
