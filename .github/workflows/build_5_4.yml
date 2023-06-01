@@ -234,8 +234,8 @@ jobs:
         touch release.txt
         
         cat <<EOF | sed -E 's/^  //' >> release.txt
-          固件版本: ${{ needs.pre-build.outputs.REVISION }} 
-          内核版本: ${{ needs.pre-build.outputs.KERNEL54 }}
+          固件版本: ${{ needs.build.outputs.REVISION }} 
+          内核版本: ${{ needs.build.outputs.KERNEL54 }}
           网关地址: $IPADD
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
         EOF
