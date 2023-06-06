@@ -41,7 +41,7 @@ jobs:
       #ROUTER_MODEL: ${{ steps.router.outputs.ROUTER_MODEL }}
       REVISION: ${{ steps.kernel.outputs.REVISION }}
       KERNEL: ${{ steps.kernel.outputs.KERNEL }}
-      KERNEL54: ${{ steps.kernel.outputs.KERNEL }}
+      KERNEL54: ${{ steps.kernel.outputs.KERNEL54 }}
     steps:
     - name: Show prepare information
       run: |
