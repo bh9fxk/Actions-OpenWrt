@@ -24,7 +24,7 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   #DEC 31, 2022
-  COMMIT_ID: 2ec379df351404e36666163316dd43a643335005
+  COMMIT_ID: 6a8f5a5d922243d51271f27a9069014a95ffd138
   UPLOAD_BIN_DIR: ${{ inputs.bin }}
   UPLOAD_FIRMWARE: ${{ inputs.firmware }}
   UPLOAD_RELEASE: ${{ inputs.release }}
