@@ -7,7 +7,6 @@
 - ipv6
 - n2n
 - helloworld
-- pushbot wrtbwom
 - zerotier one
 
 ---
