@@ -24,7 +24,7 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   #nov 5, 2022 1c46edde169001762b243c71def4cef5f020b807
-  #apr 29, 2023 7c84256de9fe57ca8f395929ecdf8c5bcb5e98e8
+  #apr 29, 2023 5.4.242 7c84256de9fe57ca8f395929ecdf8c5bcb5e98e8
   COMMIT_ID: 1c46edde169001762b243c71def4cef5f020b807
   UPLOAD_BIN_DIR: ${{ inputs.bin }}
   UPLOAD_FIRMWARE: ${{ inputs.firmware }}
@@ -186,7 +186,8 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 V=s
+        #make -j$(nproc) || make -j1 V=s
+        make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
