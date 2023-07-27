@@ -25,7 +25,7 @@ env:
   REPO_BRANCH: master
   #oct 1, 2022 236af7db5082c18044905fbb3ecd39abb195c6f0
   #apr 29, 2023 5.4.242 7c84256de9fe57ca8f395929ecdf8c5bcb5e98e8
-  COMMIT_ID: 236af7db5082c18044905fbb3ecd39abb195c6f0
+  COMMIT_ID: 7c84256de9fe57ca8f395929ecdf8c5bcb5e98e8
   UPLOAD_BIN_DIR: ${{ inputs.bin }}
   UPLOAD_FIRMWARE: ${{ inputs.firmware }}
   UPLOAD_RELEASE: ${{ inputs.release }}
