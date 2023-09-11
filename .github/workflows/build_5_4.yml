@@ -53,7 +53,7 @@ jobs:
         EOF
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Query kernel and revision
       id: source-kernel
@@ -111,7 +111,7 @@ jobs:
           
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Clean space
       env:
@@ -271,7 +271,7 @@ jobs:
     
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2
