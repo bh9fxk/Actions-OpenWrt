@@ -80,7 +80,7 @@ jobs:
         EOF
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Query kernel and revision
       id: kernel
@@ -112,7 +112,7 @@ jobs:
     
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: 清理Docker镜像和软件包
       env:
