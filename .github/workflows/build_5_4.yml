@@ -34,7 +34,7 @@ env:
 jobs:
   prepare:
     name: Prepare
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
    
     outputs:
       REVISION: ${{ steps.kernel.outputs.REVISION }}
@@ -100,7 +100,7 @@ jobs:
   build:
     name: Build ${{ matrix.MODEL }}-5_4
     needs: prepare
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
