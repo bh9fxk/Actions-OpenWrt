@@ -1,5 +1,5 @@
 #
-name: Build All OpenWrt 5.4
+name: Build All OpenWrt 5.4 old
 
 on:
   workflow_dispatch:
@@ -34,7 +34,7 @@ env:
 jobs:
   prepare:
     name: Prepare
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
    
     outputs:
       REVISION: ${{ steps.kernel.outputs.REVISION }}
