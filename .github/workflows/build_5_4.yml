@@ -118,7 +118,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo -E apt-get update
-        sudo docker rmi $(docker images -q)
+        sudo docker rmi $(sudo docker images -q)
         #sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
         #sudo -E apt-mark hold grub-efi-amd64-signed
         sudo -E apt-get -y purge azure-cli* docker* ghc* llvm* firefox google* dotnet* powershell* mysql* php* mongodb* dotnet* snap*
