@@ -1,31 +1,43 @@
 #
-name: Build All OpenWrt 5.4 old
+# Description: Build OpenWrt using GitHub Actions
+#
+name: Build OpenWrt 5.4
 
 on:
   workflow_dispatch:
     inputs:
+      model:
+        description: 选择路由器型号
+        required: true
+        default: 'r4a'
+        type: choice
+        options:
+        - r4a
+        - r3
+        - hc5611
       bin:
         description: 上传固件BIN文件，默认：否
         required: true
-        default: false
+        default: 'false'
         type: boolean
       firmware:
         description: 上传到Artifact，默认：是
         required: true
-        default: true
+        default: 'true'
         type: boolean
       release:
         description: 是否发布固件，默认：是
         required: true
-        default: true
+        default: 'true'
         type: boolean
         
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
-  #oct 1, 2022 236af7db5082c18044905fbb3ecd39abb195c6f0
-  #apr 29, 2023 5.4.242 7c84256de9fe57ca8f395929ecdf8c5bcb5e98e8
-  COMMIT_ID: 7c84256de9fe57ca8f395929ecdf8c5bcb5e98e8
+  #FEEDS_CONF: feeds.conf.default
+  CONFIG_FILE: ${{ inputs.model }}-5_4.config
+  DIY_P1_SH: ${{ inputs.model }}-diy-part1.sh
+  DIY_P2_SH: ${{ inputs.model }}-diy-part2.sh
   UPLOAD_BIN_DIR: ${{ inputs.bin }}
   UPLOAD_FIRMWARE: ${{ inputs.firmware }}
   UPLOAD_RELEASE: ${{ inputs.release }}
@@ -33,19 +45,34 @@ env:
   
 jobs:
   prepare:
-    name: Prepare
+    name: Prepare ${{ inputs.model }}
     runs-on: ubuntu-22.04
-   
+
     outputs:
+      ROUTER_MODEL: ${{ steps.router.outputs.ROUTER_MODEL }}
       REVISION: ${{ steps.kernel.outputs.REVISION }}
-      KERNEL54: ${{ steps.kernel.outputs.KERNEL54 }}
+      KERNEL: ${{ steps.kernel.outputs.KERNEL }}
     
     steps:
+    - name: Determine router model
+      id: router
+      run: |
+        if [ "${{ inputs.model }}" == "r4a" ]; then
+        echo "ROUTER_MODEL=Xiaomi Mi Router 4A Gigabit Edition" >> $GITHUB_OUTPUT
+        elif [ "${{ inputs.model }}" == "r3" ]; then
+        echo "ROUTER_MODEL=Xiaomi Mi Router 3" >> $GITHUB_OUTPUT
+        else
+        echo "ROUTER_MODEL=HiWiFi HC5611" >> $GITHUB_OUTPUT
+        fi
+
     - name: Show prepare information
       run: |
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
           #### Sources
           Time: $(date +"%Y-%m-%d %H:%M %A")
+          Router Model: ${{ steps.router.outputs.ROUTER_MODEL }}
+          Config File: $CONFIG_FILE
+          Script Files: $DIY_P1_SH $DIY_P2_SH
           Openwrt Source: $REPO_URL
           Upload Firware: $UPLOAD_FIRMWARE
           Upload Release: $UPLOAD_RELEASE
@@ -56,85 +83,59 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Query kernel and revision
-      id: source-kernel
+      id: kernel
       run: |
-          URL_4=https://raw.githubusercontent.com/coolsnowwolf/lede/master/include/kernel-5.4
           URL_10=https://raw.githubusercontent.com/coolsnowwolf/lede/master/include/kernel-5.10
+          URL_4=https://raw.githubusercontent.com/coolsnowwolf/lede/master/include/kernel-5.4
           URL_REV=https://raw.githubusercontent.com/coolsnowwolf/lede/master/package/lean/default-settings/files/zzz-default-settings
         
-          echo "SOURCE-REVISION=$(curl $URL_REV | awk -F \' '/DISTRIB_REVISION=/ {print $2}')" >> $GITHUB_OUTPUT
-          echo "SOURCE-KERNEL54=$(curl $URL_4 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
-          echo "SOURCE-KERNEL510=$(curl $URL_10 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
+          echo "REVISION=$(curl $URL_REV | awk -F \' '/DISTRIB_REVISION=/ {print $2}')" >> $GITHUB_OUTPUT
+          TESTING_KERNEL=$(awk -F= '/CONFIG_TESTING_KERNEL/ {print $2}' $GITHUB_WORKSPACE/$CONFIG_FILE)
+          if [ "$TESTING_KERNEL" == "y" ]; then
+            echo "KERNEL=$(curl $URL_10 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
+          else
+            echo "KERNEL=$(curl $URL_4 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
+          fi
     
     - name: Show kernel and revision
       run: |
         cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
-          #### Source Kernel and Revision
-          固件版本: ${{ steps.source-kernel.outputs.SOURCE-REVISION }}
-          内核版本: ${{ steps.source-kernel.outputs.SOURCE-KERNEL54 }} / ${{ steps.source-kernel.outputs.SOURCE-KERNEL510 }}
+          #### Kernel and Revision
+          固件版本: ${{ steps.kernel.outputs.REVISION }}
+          内核版本: ${{ steps.kernel.outputs.KERNEL }}
         EOF
 
-    - name: Clone source code
-      run: |
-        df -h
-        echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
-        git clone $REPO_URL -b $REPO_BRANCH openwrt
-        cd openwrt
-        git checkout $COMMIT_ID
-    
-    - name: Enquiries kernel and revision
-      id: kernel
-      run: |
-        cd openwrt
-        echo "KERNEL54=$(awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}' include/kernel-5.4)" >> $GITHUB_OUTPUT
-        echo "REVISION=$(awk -F \' '/DISTRIB_REVISION=/ {print $2}' package/lean/default-settings/files/zzz-default-settings)" >> $GITHUB_OUTPUT  
-    
-    - name: Show build kernel and revision
-      run: |
-        cat <<EOF | sed -E 's/^  //' >> $GITHUB_STEP_SUMMARY
-          #### Build Kernel and Revision
-          编译固件版本: ${{ steps.kernel.outputs.REVISION }}
-          编译内核版本: ${{ steps.kernel.outputs.KERNEL54 }}
-        EOF
-  
   build:
-    name: Build ${{ matrix.MODEL }}-5_4
+    name: Build ${{ needs.prepare.outputs.ROUTER_MODEL }}
     needs: prepare
     runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-      matrix:
-        MODEL:
-          - hc5611
-          - r3
-          - r4a
-          
+    
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Clean space
+    - name: 清理Docker镜像和软件包
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo -E apt-get update
         docker rmi `docker images -q`
-        sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
-        sudo -E apt-mark hold grub-efi-amd64-signed
-        sudo -E apt-get -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* moby* snap*
-        sudo -E systemctl daemon-reload
-        sudo -E apt-get -y autoremove --purge
-        sudo -E apt-get clean
-        
-    - name: Install dependencies
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
+
+    - name: 安装依赖软件包
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo -E apt-get update
-        sudo -E apt-get -y full-upgrade
-        echo "---------安装依赖包-------------"
-        sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 python2.7 unzip zlib1g-dev lib32gcc-s1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler g++-multilib antlr3 gperf wget curl swig rsync fxload
-        sudo -E apt-get update
+        echo "---------install依赖包-------------"
+        sudo -E apt-get -y install $(cat $GITHUB_WORKSPACE/depends-ubuntu)
+        #echo "---------dist-upgrade--------------"
+        #sudo -E apt-get -y dist-upgrade
+
+    - name: Apt Clean space
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
 
@@ -149,14 +150,13 @@ jobs:
         df -h
         echo "SPACE_A=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         git clone $REPO_URL -b $REPO_BRANCH openwrt
-        cd openwrt
-        git checkout $COMMIT_ID
-        
+
     - name: Load custom feeds
       run: |
-        chmod +x ${{ matrix.MODEL }}-diy-part1.sh
+        #[ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+        chmod +x $DIY_P1_SH
         cd openwrt
-        $GITHUB_WORKSPACE/${{ matrix.MODEL }}-diy-part1.sh
+        $GITHUB_WORKSPACE/$DIY_P1_SH
 
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
@@ -166,10 +166,11 @@ jobs:
 
     - name: Load custom configuration
       run: |
-        [ -e ${{ matrix.MODEL }}-5_4.config ] && mv ${{ matrix.MODEL }}-5_4.config openwrt/.config
-        chmod +x ${{ matrix.MODEL }}-diy-part2.sh
+        #[ -e files ] && mv files openwrt/files
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        chmod +x $DIY_P2_SH
         cd openwrt
-        $GITHUB_WORKSPACE/${{ matrix.MODEL }}-diy-part2.sh
+        $GITHUB_WORKSPACE/$DIY_P2_SH
         echo "IPADD=$(grep "lan)" package/base-files/files/bin/config_generate | awk -F "\"" '{print $2}')" >> $GITHUB_ENV
 
     - name: Download packages
@@ -186,7 +187,7 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 V=s
+        make -j$(nproc) || make -j1 || make -j1 V=s
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
@@ -198,7 +199,9 @@ jobs:
         cd openwrt
         echo "SPACE_B=$(df / | grep '/' | awk '{print $4}')" >> $GITHUB_ENV
         du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
-        
+        du -h --max-depth=1 ./build_dir
+        du -h --max-depth=1 ./bin
+
     - name: Organize files
       id: organize
       if: steps.compile.outputs.status == 'success' && !cancelled()
@@ -242,12 +245,12 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.organize.outputs.status == 'success'
       run: |
-        echo "release_tag=$(date +"%Y.%m.%d-%H%M")${{ env.DEVICE_NAME }}-5.4" >> $GITHUB_OUTPUT
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")${{ env.DEVICE_NAME }}" >> $GITHUB_OUTPUT
         touch release.txt
         
         cat <<EOF | sed -E 's/^  //' >> release.txt
-          固件版本: ${{ needs.prepare.outputs.REVISION }} 
-          内核版本: ${{ needs.prepare.outputs.KERNEL54 }}
+          OpenWrt for ${{ needs.prepare.outputs.ROUTER_MODEL }}
+          固件版本: ${{ needs.prepare.outputs.REVISION }} 内核版本: ${{ needs.prepare.outputs.KERNEL }}
           网关地址: $IPADD
           Version: $(cat ${{ env.FIRMWARE }}/version.buildinfo)
         EOF
@@ -270,13 +273,10 @@ jobs:
     runs-on: ubuntu-22.04
     
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2
       with:
-        retain_days: 0
+        retain_days: 1
         keep_minimum_runs: 2
 
     - name: Delete old Releases
