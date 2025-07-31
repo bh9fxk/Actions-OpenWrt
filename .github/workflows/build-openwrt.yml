@@ -123,6 +123,8 @@ jobs:
         docker rmi `docker images -q`
         sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
         sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt -y autoremove --purge
+        sudo -E apt autoclean
         df -h
 
     - name: 安装依赖软件包
