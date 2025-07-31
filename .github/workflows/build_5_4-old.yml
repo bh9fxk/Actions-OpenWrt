@@ -12,9 +12,9 @@ on:
         default: 'r4a'
         type: choice
         options:
+        - hc5611
         - r4a
         - r3
-        - hc5611
       bin:
         description: 上传固件BIN文件，默认：否
         required: true
