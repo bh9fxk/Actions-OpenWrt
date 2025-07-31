@@ -9,7 +9,7 @@ on:
       model:
         description: 选择路由器型号
         required: true
-        default: 'r4a'
+        default: 'hc5611'
         type: choice
         options:
         - hc5611
