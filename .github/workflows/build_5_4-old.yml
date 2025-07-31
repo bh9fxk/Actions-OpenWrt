@@ -96,6 +96,7 @@ jobs:
           else
             echo "KERNEL=$(curl $URL_10 | awk -F '[-,=]' '/LINUX_KERNEL_HASH/ {print $2}')" >> $GITHUB_OUTPUT
           fi
+          # 测试内核为5.4，默认为5.10
     
     - name: Show kernel and revision
       run: |
