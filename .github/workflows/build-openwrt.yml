@@ -281,13 +281,13 @@ jobs:
         files: ${{ env.FIRMWARE }}/*
 
   delete:
-    name: Delete old workflow
+    name: Delete old workflow and Releases
     needs: [ prepare, build ]
     runs-on: ubuntu-22.04
     
     steps:
     - name: Delete workflow runs
-      uses: Mattraks/delete-workflow-runs@v2
+      uses: Mattraks/delete-workflow-runs@v2.1.0
       with:
         retain_days: 1
         keep_minimum_runs: 2
